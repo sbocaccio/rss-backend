@@ -21,6 +21,7 @@ class RegisterApi(generics.CreateAPIView):
             "message": "User Created Successfully",
             'refresh': str(refresh_token),
             'access': str(refresh_token.access_token),
+            'user_id' : user.id
         })
 
 
