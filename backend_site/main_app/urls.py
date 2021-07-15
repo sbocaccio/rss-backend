@@ -9,5 +9,5 @@ from .views.login import LoginAPIView
 urlpatterns = [
     path('register/', RegisterApi.as_view(), name=''),
     path('login/',LoginAPIView.as_view(),name=''),
-
+    path('create_feed/', views.CreateSubscriptionFeed.as_view(),name='createdFeed')
 ]
