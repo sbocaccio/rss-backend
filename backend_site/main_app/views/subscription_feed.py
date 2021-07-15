@@ -10,7 +10,9 @@ from rest_framework.response import Response
 class CreateSubscriptionFeedAPI(APIView):
     permission_classes = [IsAuthenticated]
     def post(self, request, *args, **kwargs):
-        serializer = CreateFeedSerializers(data=request.data, context={'request': request})
+        data = request.data.copy()
+        data['user_id'] = request.user.id
+        serializer = CreateFeedSerializers(data=data, context={'request': request})
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response({
