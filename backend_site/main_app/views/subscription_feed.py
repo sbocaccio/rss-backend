@@ -11,10 +11,9 @@ class CreateSubscriptionFeedAPI(APIView):
     permission_classes = [IsAuthenticated]
     def post(self, request, *args, **kwargs):
         data = request.data.copy()
-        data['user_id'] = request.user.id
         serializer = CreateFeedSerializers(data=data, context={'request': request})
         serializer.is_valid(raise_exception=True)
-        serializer.save()
+        feed = serializer.save()
         return Response({
             "message": "Succesfully created feed.",
         })        
