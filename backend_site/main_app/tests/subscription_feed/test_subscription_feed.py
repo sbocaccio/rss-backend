@@ -1,13 +1,13 @@
 from rest_framework.test import APITestCase
 from http import HTTPStatus
 from ...models.subscription_feed_model import SubscriptionFeed
-
+import feedparser
  
 class SubscriptionFeedTest(APITestCase): 
 
     @classmethod
     def setUpTestData(cls):
-        cls.rss_url = 'http://example.com'
+        cls.rss_url = "https://timesofindia.indiatimes.com/rssfeedstopstories.cms"
 
     def create_user(self):
             data = {"username": 'newuser', "password": 'password123' ,"email": 'newuser@gmail.com'}
@@ -40,4 +40,12 @@ class SubscriptionFeedTest(APITestCase):
             self.assertEqual(len(SubscriptionFeed.objects.filter(user_id = user_id)), 1)
             self.assertEqual(len(SubscriptionFeed.objects.filter(user_id = (user_id + 1) )), 0)
 
+    def test_cannot_create_feed_using_invalid_url(self):
+            user_id = self.create_user()
+            data = {"url": "https://kako.com"}
+            resp= self.client.post("/main_app/create_feed/", data)
+            self.assertEqual(resp.status_code, HTTPStatus.BAD_REQUEST)
+            self.assertEqual(resp.data['message'], 'Invalid url.')
 
+
+ 
