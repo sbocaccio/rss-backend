@@ -4,8 +4,8 @@ from django.contrib.auth.models import User
 
 
 
-class SubscriptionFeed(models.Model):
+class SubscriptionFeeds(models.Model):
+    users_subscribed = models.ManyToManyField(User)
     link = models.CharField(max_length=250)
     title = models.CharField(max_length=250)
-    users_subscribed = models.ManyToManyField(User)
     image = models.CharField(max_length=250)

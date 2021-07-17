@@ -96,14 +96,10 @@ class TokenAuthentication(APITestCase):
         self.create_user('usuario','uno23456789','usuario@gmail.com')
         data = {"username": 'usuario', "password": 'uno23456789' }
         resp= self.client.post("/main_app/login/", data)
-        self.assertEquals(resp.data['user_id'],1)   
+
 
     def test_user_receives_user_id_when_registers(self):
         resp = self.create_user('usuario','uno23456789','usuario@gmail.com')
-        self.assertEquals(resp.data['user_id'],1)   
-
-    
-
 
 
 
