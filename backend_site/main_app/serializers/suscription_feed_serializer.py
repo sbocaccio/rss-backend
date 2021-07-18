@@ -31,7 +31,6 @@ class FeedHelper():
 
 class CreateFeedSerializers(serializers.ModelSerializer):
     get_or_create = serializers.CharField(max_length=255)
-    feed_helper = FeedHelper()
     class Meta:
         model = SubscriptionFeeds
         fields = ['get_or_create']
@@ -53,7 +52,8 @@ class CreateFeedSerializers(serializers.ModelSerializer):
 
     def _parse_data(self, validated_data):
         try:
-            parse_data = self.feed_helper.parse_data(validated_data)
+            feed_helper = FeedHelper()
+            parse_data = feed_helper.parse_data(validated_data)
         except AssertionError as error:
             raise serializers.ValidationError({'message': error}, code='400')
         return parse_data
