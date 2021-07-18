@@ -19,12 +19,12 @@ class CreateSubscriptionFeedAPI(APIView):
         serializer = CreateFeedSerializers(data=data, context={'request': request})
         serializer.is_valid(raise_exception=True)
         feed = serializer.save()
+        serialized_feed = serializers.serialize('json', [feed, ])
 
         return Response({
             "message": "Succesfully created feed.",
-            "link": feed.link,
-            'title': feed.title,
-            "image": feed.image,
+            "feed": serialized_feed,
+
         })
 
 

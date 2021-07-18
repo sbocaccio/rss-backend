@@ -1,12 +1,11 @@
 from rest_framework.test import APITestCase
-from rest_framework.test import APITestCase
 from http import HTTPStatus
 from ...models.subscription_feed_model import SubscriptionFeeds
 import mock
 from mock import patch
 from ...serializers.suscription_feed_serializer import FeedHelper
 from django.contrib.auth.models import User
-
+from django.core import serializers
 class SubscriptionFeedTest(APITestCase): 
 
     @classmethod
@@ -68,10 +67,11 @@ class SubscriptionFeedTest(APITestCase):
     def test_createFeed_response_includes_information_of_the_model(self,mock_my_method):
         mock_value = {'link': 'https://falseurl.com', 'title': "Mom", 'image': 'miimagen.com',}
         mock_my_method.return_value = mock_value
-        user1 = self.create_and_login_user('newuser1')
+        self.create_and_login_user('newuser1')
         data = {"get_or_create": self.rss_url}
         resp = self.client.post("/main_app/create_feed/", data).data
-        self.assertEqual(resp['title'] ,"Mom")
-        self.assertEqual(resp['link'], "https://falseurl.com")
-        self.assertEqual(resp['image'], "miimagen.com")
-
+        
+        for deserialize_feed in serializers.deserialize('json', resp['feed']): # It should only iterate through 1 element and has to be the feed just created.
+            self.assertEqual(deserialize_feed.object.link,'https://falseurl.com')
+            self.assertEqual(deserialize_feed.object.title, 'Mom')
+            self.assertEqual(deserialize_feed.object.image, 'miimagen.com')
