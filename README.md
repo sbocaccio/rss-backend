@@ -1,4 +1,3 @@
-
 # Dependencies:
 The project uses pip version 20.3.4 (python 3.9) on Ubuntu. If you need to download python3 go to https://www.python.org/downloads/
 
@@ -24,12 +23,12 @@ The project uses pip version 20.3.4 (python 3.9) on Ubuntu. If you need to downl
 Any python commands you use will now work with your virtual environment*
 
 ## Check dependencies
-**To check dependencies of the project, run at the root directory:** 
+**To check dependencies of the project, run the followings commands inside *backend_site* directory, where you should find a file named *manage.py*, :** 
 
     pip install pipreqs 
     pipreqs 
 
-you can see the dependencies in *requirements.txt*    
+you can see the dependencies found in *requirements.txt*    
 
 **Install them with:**  
 
