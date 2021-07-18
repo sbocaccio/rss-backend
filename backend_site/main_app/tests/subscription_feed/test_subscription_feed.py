@@ -37,7 +37,7 @@ class SubscriptionFeedTest(APITestCase):
             self.assertEqual(len(SubscriptionFeeds.objects.filter()) , 0)
 
     def test_cannot_create_feed_using_invalid_url(self):
-            user_id = self.create_and_login_user('newuser1')
+            self.create_and_login_user('newuser1')
             data = {"get_or_create": "https://kako.com"}
             resp= self.client.post("/main_app/create_feed/", data)
             self.assertEqual(resp.status_code, HTTPStatus.BAD_REQUEST)
@@ -56,9 +56,9 @@ class SubscriptionFeedTest(APITestCase):
             data = {"get_or_create": self.rss_url}
             self.client.post("/main_app/create_feed/", data)
 
-            self.assertEqual(len(SubscriptionFeeds.objects.all()), 1)
             user1 = User.objects.filter(username='newuser2')[0]
             user2 = User.objects.filter(username='newuser1')[0]
+            self.assertEqual(len(SubscriptionFeeds.objects.all()), 1)
             self.assertEqual(len(SubscriptionFeeds.objects.filter(users_subscribed = user2 )),1)
             self.assertEqual(len(SubscriptionFeeds.objects.filter(users_subscribed = user1 )),1)
 

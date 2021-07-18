@@ -1,33 +1,7 @@
 from os import error
 from ..models.subscription_feed_model import SubscriptionFeeds
 from rest_framework import  serializers
-import feedparser
-from http import HTTPStatus
-
-class FeedHelper():
-    feed_parse = {}
-    def parse_data(self, data):
-        parse_data = {}
-        self._assert_can_parse(data)
-        self._add_fields(data, parse_data)
-        return parse_data
-
-    def _add_fields(self, data, parse_data):
-        parse_data['link'] = data['get_or_create']
-        parse_data['title'] = self.feed_parse.feed['title']
-        if ('image' in self.feed_parse.feed):
-            parse_data['image'] = self.feed_parse.feed['image']['href']
-
-    def _assert_can_parse(self, data):
-        try:
-            self.feed_parse = feedparser.parse(data['get_or_create'])
-            if (self.feed_parse['status'] != HTTPStatus.OK):
-                raise Exception()
-        except:
-            raise  AssertionError ('Impossible to parse URL.')
-           
-        return self.feed_parse
-
+from ..auxiliary.feed_helper import FeedHelper
 
 class CreateFeedSerializers(serializers.ModelSerializer):
     get_or_create = serializers.CharField(max_length=255)
@@ -54,7 +28,7 @@ class CreateFeedSerializers(serializers.ModelSerializer):
         try:
             feed_helper = FeedHelper()
             parse_data = feed_helper.parse_data(validated_data)
-        except AssertionError as error:
+        except AttributeError as error:
             raise serializers.ValidationError({'message': error}, code='400')
         return parse_data
     
