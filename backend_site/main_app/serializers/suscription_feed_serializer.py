@@ -16,12 +16,15 @@ class CreateFeedSerializers(serializers.ModelSerializer):
     def _create_feed(self, validated_data):
         parsed_data = self._parse_data(validated_data)
         user = self.context['request'].user
-        if (len(SubscriptionFeeds.objects.filter(**parsed_data)) == 0):
+        subscriptions = SubscriptionFeeds.objects.filter(**parsed_data)
+        if (len(subscriptions) == 0):
             feed = SubscriptionFeeds.objects.create(**parsed_data)
+        elif len(subscriptions.filter(users_subscribed = user)) == 1:  # User already subscribed to that feed
+            raise serializers.ValidationError({'message': 'User is already subscribed to that page.'}, code='400')
         else:
-            feed = SubscriptionFeeds.objects.filter(**parsed_data)[0]
-        feed.users_subscribed.add(user)
+            feed = subscriptions[0]
 
+        feed.users_subscribed.add(user)
         return feed
 
     def _parse_data(self, validated_data):

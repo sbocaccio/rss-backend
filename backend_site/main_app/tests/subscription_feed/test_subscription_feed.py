@@ -59,8 +59,9 @@ class SubscriptionFeedTest(APITestCase):
             user1 = User.objects.filter(username='newuser2')[0]
             user2 = User.objects.filter(username='newuser1')[0]
             self.assertEqual(len(SubscriptionFeeds.objects.all()), 1)
-            self.assertEqual(len(SubscriptionFeeds.objects.filter(users_subscribed = user2 )),1)
+
             self.assertEqual(len(SubscriptionFeeds.objects.filter(users_subscribed = user1 )),1)
+            self.assertEqual(len(SubscriptionFeeds.objects.filter(users_subscribed=user2)), 1)
 
 
     @patch.object(FeedHelper, 'parse_data')
@@ -75,3 +76,13 @@ class SubscriptionFeedTest(APITestCase):
             self.assertEqual(deserialize_feed.object.link,'https://falseurl.com')
             self.assertEqual(deserialize_feed.object.title, 'Mom')
             self.assertEqual(deserialize_feed.object.image, 'miimagen.com')
+
+    @patch.object(FeedHelper, 'parse_data')
+    def test_user_can_not_subscribe_twice_to_a_feed(self,mock_my_method):
+        mock_value = {'link': 'https://falseurl.com', 'title': "Mom", 'image': 'miimagen.com', }
+        mock_my_method.return_value = mock_value
+        self.create_and_login_user('newuser1')
+        data = {"get_or_create": self.rss_url}
+        self.client.post("/main_app/create_feed/", data)
+        resp = self.client.post("/main_app/create_feed/", data)
+        self.assertEqual(resp.data['message'], 'User is already subscribed to that page.')
