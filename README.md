@@ -35,20 +35,6 @@ you can see the dependencies found in *requirements.txt*
     pip install -r requirements.txt
 
 *Advertised: Some modules may be required to install manually since pipreqs sometimes not finds everyone required.*
-# Before starting:
-
-## Check migrations
-Inside *backend_site* directory you should find a file named *manage.py*
-
-**Check if there are migrations unresolved running**
-
-    python3 ./manage.py makemigrations
-
-**If you have unapplied migrations(s) run**
-
-    python3 ./manage.py migrate
-
-**Now everything has been setup.**
 
 # Useful commands
 ## How to open the server:
@@ -60,4 +46,11 @@ In the same directory run
 ## How to run the tests
 
     python3 ./manage.py test main_app.tests
+
+## Migrations
+When you create or modify a model run inside *backend_site* directory where you should find a file named *manage.py*
+
+    python3 ./manage.py makemigrations
+    python3 ./manage.py migrate
+
 
