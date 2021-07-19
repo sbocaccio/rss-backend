@@ -12,7 +12,7 @@ from django.core import serializers
 
 
 
-class CreateSubscriptionFeedAPI(APIView):
+class SubscriptionFeedAPI(APIView):
     permission_classes = [IsAuthenticated]
     def post(self, request, *args, **kwargs):
         data = request.data.copy()

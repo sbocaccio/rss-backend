@@ -20,7 +20,9 @@ class CreateFeedSerializers(serializers.ModelSerializer):
         if (len(subscriptions) == 0):
             feed = SubscriptionFeeds.objects.create(**parsed_data)
         elif len(subscriptions.filter(users_subscribed = user)) == 1:  # User already subscribed to that feed
-            raise serializers.ValidationError({'message': 'User is already subscribed to that page.'}, code='400')
+            error =serializers.ValidationError({'message': 'User is already subscribed to that page.'})
+            error.status_code = '409'
+            raise error
         else:
             feed = subscriptions[0]
 
