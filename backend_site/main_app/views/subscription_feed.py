@@ -27,4 +27,13 @@ class SubscriptionFeedAPI(APIView):
 
         })
 
+    def get(self, request, *args, **kwargs):
+        user = request.user
+        user_subscriptions = SubscriptionFeeds.objects.filter(users_subscribed = user)
+        data = serializers.serialize('json', list(user_subscriptions), fields=('title', 'image','link'))
+        return Response({
+            "message": "Succesfully created feed.",
+            "feed": data
+        })
+
 

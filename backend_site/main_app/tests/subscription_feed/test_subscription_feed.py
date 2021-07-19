@@ -94,4 +94,10 @@ class SubscriptionFeedTest(APITestCase):
         self.create_and_login_user('newuser1')
         data = {"get_or_create": self.rss_url}
         self.client.post("/main_app/feed/", data)
-        self.client.get("/main_app/feed/")
+        resp =self.client.get("/main_app/feed/")
+
+        for deserialize_feed in serializers.deserialize('json', resp.data[
+            'feed']):  # It should only iterate through 1 element and has to be the feed just created.
+            self.assertEqual(deserialize_feed.object.link, 'https://falseurl.com')
+            self.assertEqual(deserialize_feed.object.title, 'Mom')
+            self.assertEqual(deserialize_feed.object.image, 'miimagen.com')
