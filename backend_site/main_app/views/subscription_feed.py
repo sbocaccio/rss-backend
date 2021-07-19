@@ -4,11 +4,9 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from ..models.subscription_feed_model import SubscriptionFeeds
 from ..serializers.suscription_feed_serializer import CreateFeedSerializers
 from rest_framework.response import Response
-from django.forms.models import model_to_dict
-from django.forms.models import model_to_dict
+
 import json
 from django.core import serializers
-
 
 
 

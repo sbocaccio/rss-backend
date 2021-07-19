@@ -18,7 +18,7 @@ class FeedHelper():
     def _assert_can_parse(self, data):
 
         self.feed_parse = feedparser.parse(data['get_or_create'])
-        if (not 'status' in self.feed_parse or self.feed_parse['status'] != HTTPStatus.OK):
+        if (not 'status' in self.feed_parse or self.feed_parse['status'] != HTTPStatus.OK or not 'title' in self.feed_parse):
             raise AttributeError('Impossible to parse URL.')
         return self.feed_parse
 
