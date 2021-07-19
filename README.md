@@ -37,7 +37,7 @@ you can see the dependencies found in *requirements.txt*
 *Advertised: Some modules may be required to install manually since pipreqs sometimes not finds everyone required.*
 
 ## Initialize the database
-**To initialize the database run in the same directory:
+**To initialize the database run in the same directory:**
 
     python3 ./manage.py migrate
 
