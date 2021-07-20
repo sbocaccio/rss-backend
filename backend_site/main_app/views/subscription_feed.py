@@ -1,19 +1,16 @@
-from rest_framework.views import APIView
-from rest_framework import generics
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.generics import ListCreateAPIView
+from rest_framework.permissions import IsAuthenticated
 from ..models.subscription_feed_model import SubscriptionFeeds
 from ..serializers.suscription_feed_serializer import CreateFeedSerializers
 from rest_framework.response import Response
-
-import json
 from django.core import serializers
 
 
 
-class SubscriptionFeedAPI(APIView):
+class SubscriptionFeedAPI(ListCreateAPIView):
     permission_classes = [IsAuthenticated]
     def post(self, request, *args, **kwargs):
-        data = request.data.copy()
+        data = request.data
         serializer = CreateFeedSerializers(data=data, context={'request': request})
         serializer.is_valid(raise_exception=True)
         feed = serializer.save()
@@ -22,7 +19,6 @@ class SubscriptionFeedAPI(APIView):
         return Response({
             "message": "Succesfully created feed.",
             "feed": serialized_feed,
-
         })
 
     def get(self, request, *args, **kwargs):

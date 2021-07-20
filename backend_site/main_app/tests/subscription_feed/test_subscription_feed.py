@@ -30,7 +30,7 @@ class SubscriptionFeedTest(APITestCase):
             self.assertEqual(resp.data['message'],'Succesfully created feed.')
             self.assertEqual(len(SubscriptionFeeds.objects.filter(**mock_value)),1)
         
-    def test_none_authenticated_user_can_not_create_feed(self):
+    def test_feed_is_assigned_only_to_authenticated_user(self):
             data = {"get_or_create": self.rss_url}
             resp= self.client.post("/main_app/feed/", data)
             self.assertEqual(resp.status_code, HTTPStatus.UNAUTHORIZED )
@@ -101,3 +101,4 @@ class SubscriptionFeedTest(APITestCase):
             self.assertEqual(deserialize_feed.object.link, 'https://falseurl.com')
             self.assertEqual(deserialize_feed.object.title, 'Mom')
             self.assertEqual(deserialize_feed.object.image, 'miimagen.com')
+
