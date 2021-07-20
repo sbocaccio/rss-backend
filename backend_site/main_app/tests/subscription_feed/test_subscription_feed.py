@@ -119,11 +119,3 @@ class SubscriptionFeedTest(APITestCase):
         self.assertEqual(resp[0]['title'], 'Mom2')
         self.assertEqual(resp[0]['image'], None)
         self.assertEqual(len(resp),1)
-
-    def test_specific_page(self):
-        self.create_and_login_user('newuser1')
-        data = {"link": 'http://rss.cnn.com/rss/edition_us.rss'}
-        self.client.post("/main_app/feed/", data).json()
-
-
-
