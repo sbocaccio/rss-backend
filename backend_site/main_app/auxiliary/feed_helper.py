@@ -9,7 +9,7 @@ class FeedHelper():
 
     def _select_fields(self, data,feed_parse):
         parse_data = {}
-        parse_data['link'] = data['get_or_create']
+        parse_data['link'] = data['link']
         parse_data['title'] = feed_parse.feed['title']
         if ('image' in feed_parse.feed):
             parse_data['image'] = feed_parse.feed['image']['href']
@@ -17,7 +17,7 @@ class FeedHelper():
 
     def _assert_can_parse(self, data):
 
-        feed_parse = feedparser.parse(data['get_or_create'])
+        feed_parse = feedparser.parse(data['link'])
         if (not 'status' in feed_parse or feed_parse['status'] != HTTPStatus.OK or not 'title' in feed_parse.feed):
             raise AttributeError('Impossible to parse URL.')
         return feed_parse
