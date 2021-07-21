@@ -76,7 +76,6 @@ class TokenAuthentication(APITestCase):
         self.assertEqual(resp.status_code,HTTPStatus.OK)
     
 
-
     def test_login_user_returns_a_token(self):
         resp= self.create_user('newuser','uno23456789','usuario@gmail.com')
         data = {"username": 'newuser', "password": 'uno23456789' }
@@ -88,8 +87,8 @@ class TokenAuthentication(APITestCase):
         self.assertEqual(resp.status_code,HTTPStatus.OK)    
      
 
-    def test_cannot_create_user_when_password_is_invalid(self):
-        resp= self.create_user('newuser','contra','usuario@gmail.com')
+    def test_cannot_create_user_when_password_length_is_less_than_8_characters(self):
+        resp= self.create_user('newuser','mano','usuario@gmail.com')
         self.assertEqual(resp.status_code,HTTPStatus.BAD_REQUEST)
         self.assertEquals(str(resp.data['message']),'Password must have at least 8 digits')   
 
