@@ -15,5 +15,5 @@ class SubscriptionFeedAPI(ListCreateAPIView):
     def get_queryset(self):
         user = self.request.user
         user_subscriptions = SubscriptionFeeds.objects.filter(users_subscribed=user)
-        return user_subscriptionsgit
+        return user_subscriptions
 

@@ -105,7 +105,6 @@ class SubscriptionFeedTest(APITestCase):
     @patch.object(FeedHelper, 'parse_data')
     def test_users_cannot_receives_subscriptions_of_other_users(self,mock_my_method):
         
-
         mock_value = {'link': 'https://falseurl1.com', 'title': "Mom1", 'image': 'miimagen.com', }
         mock_my_method.return_value = mock_value
         self.submit_post_creating_user_and_mock('newuser1')
@@ -119,3 +118,4 @@ class SubscriptionFeedTest(APITestCase):
         self.assertEqual(resp[0]['title'], 'Mom2')
         self.assertEqual(resp[0]['image'], None)
         self.assertEqual(len(resp),1)
+

@@ -27,19 +27,21 @@ class CreateFeedSerializers(serializers.ModelSerializer):
             except:
                 parsed_data['image'] = ''
 
-        subscription,created = SubscriptionFeeds.objects.get_or_create(**parsed_data)
+        subscription,created = SubscriptionFeeds.objects.get_or_create(link = parsed_data['link'],title = parsed_data['title'])
+
+        if (user in subscription.users_subscribed.all()):
+            error = serializers.ValidationError({'message': 'User is already subscribed to that page.'})
+            error.status_code = '409'
+            raise error
 
         if('image' in parsed_data and parsed_data['image']):
             subscription.image.save(
                 os.path.basename(parsed_data['link']),
                 File(open(result[0], 'rb'))
             )
-        if (user in subscription.users_subscribed.all()):
-            error =serializers.ValidationError({'message': 'User is already subscribed to that page.'})
-            error.status_code = '409'
-            raise error
 
         subscription.users_subscribed.add(user)
+
         return subscription
 
     def _parse_data(self, validated_data):
