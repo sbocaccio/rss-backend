@@ -25,9 +25,9 @@ class SubscriptionFeedTest(APITestCase):
         self.client.post("/main_app/feed/", data)
         
     @patch.object(FeedHelper, 'parse_data')
-    def test_authenticated_user_can_create_subscriptionFeed(self,mock_my_method):
+    def test_authenticated_user_can_create_subscriptionFeed(self, url_parser):
             mock_value = {'link': 'https://falseurl.com', 'title': "Mom"}
-            mock_my_method.return_value = mock_value
+            url_parser.return_value = mock_value
             self.create_and_login_user('newuser')
             data = {"link": self.rss_url}
             resp= self.client.post("/main_app/feed/", data)
@@ -51,9 +51,9 @@ class SubscriptionFeedTest(APITestCase):
 
 
     @patch.object(FeedHelper, 'parse_data')
-    def test_two_user_creating_new_feed_only_creates_one(self,mock_my_method):
+    def test_two_user_creating_new_feed_only_creates_one(self, url_parser):
             mock_value = {'link': 'https://falseurl.com', 'title': "Mom", 'image': 'miimagen.com', }
-            mock_my_method.return_value = mock_value
+            url_parser.return_value = mock_value
             self.submit_post_creating_user_and_mock('newuser2')
             self.submit_post_creating_user_and_mock('newuser1')
 
@@ -67,9 +67,9 @@ class SubscriptionFeedTest(APITestCase):
 
 
     @patch.object(FeedHelper, 'parse_data')
-    def test_createFeed_response_includes_information_of_the_model(self,mock_my_method):
+    def test_createFeed_response_includes_information_of_the_model(self, url_parser):
         mock_value = {'link': 'https://falseurl.com', 'title': "Mom", 'image': 'miimagen.com',}
-        mock_my_method.return_value = mock_value
+        url_parser.return_value = mock_value
         self.create_and_login_user('newuser1')
         data = {"link": self.rss_url}
         resp = self.client.post("/main_app/feed/", data).json()
@@ -80,9 +80,9 @@ class SubscriptionFeedTest(APITestCase):
         self.assertEqual(resp['image'], None)
 
     @patch.object(FeedHelper, 'parse_data')
-    def test_user_can_not_subscribe_twice_to_a_feed(self,mock_my_method):
+    def test_user_can_not_subscribe_twice_to_a_feed(self, url_parser):
         mock_value = {'link': 'https://falseurl.com', 'title': "Mom", 'image': 'miimagen.com', }
-        mock_my_method.return_value = mock_value
+        url_parser.return_value = mock_value
         self.create_and_login_user('newuser1')
         data = {"link": self.rss_url}
         self.client.post("/main_app/feed/", data)
@@ -90,9 +90,9 @@ class SubscriptionFeedTest(APITestCase):
         self.assertEqual(resp.data['message'], 'User is already subscribed to that page.')
 
     @patch.object(FeedHelper, 'parse_data')
-    def test_user_can_receives_her_subscriptions_using_api(self,mock_my_method):
+    def test_user_can_receives_her_subscriptions_using_api(self, url_parser):
         mock_value = {'link': 'https://falseurl.com', 'title': "Mom", 'image': 'miimagen.com', }
-        mock_my_method.return_value = mock_value
+        url_parser.return_value = mock_value
         self.create_and_login_user('newuser1')
         data = {"link": self.rss_url}
         self.client.post("/main_app/feed/", data).json()
@@ -103,14 +103,14 @@ class SubscriptionFeedTest(APITestCase):
         self.assertEqual(resp[0]['image'], None)
 
     @patch.object(FeedHelper, 'parse_data')
-    def test_users_cannot_receives_subscriptions_of_other_users(self,mock_my_method):
-        
+    def test_users_cannot_receives_subscriptions_of_other_users(self, url_parser):
+
         mock_value = {'link': 'https://falseurl1.com', 'title': "Mom1", 'image': 'miimagen.com', }
-        mock_my_method.return_value = mock_value
+        url_parser.return_value = mock_value
         self.submit_post_creating_user_and_mock('newuser1')
 
         mock_value = {'link': 'https://falseurl2.com', 'title': "Mom2", 'image': 'miimagen.com', }
-        mock_my_method.return_value = mock_value
+        url_parser.return_value = mock_value
         self.submit_post_creating_user_and_mock('newuser2')
 
         resp = self.client.get("/main_app/feed/").json()
@@ -118,4 +118,5 @@ class SubscriptionFeedTest(APITestCase):
         self.assertEqual(resp[0]['title'], 'Mom2')
         self.assertEqual(resp[0]['image'], None)
         self.assertEqual(len(resp),1)
+
 
