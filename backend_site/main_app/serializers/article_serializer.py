@@ -10,7 +10,9 @@ class ArticleSerializers(serializers.Serializer):
     link = serializers.URLField(max_length=255)
     summary = serializers.CharField(max_length=1000)
     title = serializers.CharField(max_length=250)
+    date_time= serializers.DateTimeField()
+    id = serializers.IntegerField()
     class Meta:
         model = Article
-        fields = ['link','title','summary']
+        fields = ['link','title','summary','id','date_time']
 

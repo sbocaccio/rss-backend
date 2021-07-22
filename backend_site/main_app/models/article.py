@@ -8,4 +8,5 @@ class Article(models.Model):
    summary = models.CharField(max_length=1000)
    title = models.CharField(max_length=250)
    users_subscribed = models.ManyToManyField(User)
+   date_time = models.DateTimeField(null=True)
 
