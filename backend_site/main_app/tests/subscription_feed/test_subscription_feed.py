@@ -94,12 +94,14 @@ class SubscriptionFeedTest(APITestCase):
         url_parser.return_value = mock_value
         self.create_and_login_user('newuser1')
         data = {"link": self.rss_url}
-        self.client.post("/main_app/feed/", data).json()
+        resp =self.client.post("/main_app/feed/", data).json()
         resp =self.client.get("/main_app/feed/").json()
 
         self.assertEqual(resp[0]['link'], 'https://falseurl.com')
         self.assertEqual(resp[0]['title'], 'Mom')
         self.assertEqual(resp[0]['image'], None)
+        self.assertEqual(resp[0]['id'], 1)
+
 
     @patch.object(FeedHelper, 'parse_data')
     def test_users_cannot_receives_subscriptions_of_other_users(self, url_parser):

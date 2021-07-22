@@ -4,6 +4,7 @@ from ...serializers.suscription_feed_serializer import FeedHelper
 from mock import patch
 from ...models.article import Article
 from django.contrib.auth.models import User
+from ...models.subscription_feed_model import SubscriptionFeeds
 
 
 class DisplayArticulesTest(APITestCase):
@@ -50,8 +51,9 @@ class DisplayArticulesTest(APITestCase):
                       'entries': [{'title': 'Titulo', 'link': 'linkfalso', 'summary': 'summaryfalso'}]}
         url_parser.return_value = mock_value
         self.submit_post_creating_user('newuser', {"link": self.rss_url})
-        data = {'link':'https://falseurl.com', 'action':'refresh'}
-        resp = self.client.get('/main_app/articles/', data= data).json()
+
+        resp = self.client.get('/main_app/subscriptions/1/articles/').json()
+
         self.assertEqual(len(resp), 1)
         self.assertEqual(resp[0]['link'], 'linkfalso')
         self.assertEqual(resp[0]['title'],'Titulo' )
@@ -62,9 +64,8 @@ class DisplayArticulesTest(APITestCase):
         mock_value = {'link': 'https://falseurl.com', 'title': "Mom",
                       'entries': [{'title': 'Titulo', 'link': 'linkfalso', 'summary': 'summaryfalso'}]}
         url_parser.return_value = mock_value
-        self.submit_post_creating_user('newuser', {"link": ''})
-        data = {'link':'https://falseurl2.com', 'action':'refresh'}
-        resp = self.client.get('/main_app/articles/', data= data).json()
+        self.submit_post_creating_user('newuser', {"link": self.rss_url})
+        resp = self.client.get('/main_app/subscriptions/2/articles/').json()
         self.assertEqual(resp['detail'], 'You are not subscribed to that feed. Subscribe first to read articles')
 
 

@@ -12,8 +12,8 @@ class CreateFeedSerializers(serializers.ModelSerializer):
     link = serializers.URLField(max_length=255)
     class Meta:
         model = SubscriptionFeeds
-        fields = ['link','title','image']
-        read_only_fields = ['title', 'image']
+        fields = ['link','title','image','id']
+        read_only_fields = ['title', 'image','id']
 
     def create(self, validated_data):
         feed = self._create_feed(validated_data)
