@@ -1,12 +1,12 @@
-from rest_framework.test import APITestCase
+from rest_framework.test import APITestCase, APIClient
 from http import HTTPStatus
 from ...models.subscription_feed_model import SubscriptionFeeds
-import mock
 from mock import patch
-from ...serializers.suscription_feed_serializer import FeedHelper, CreateFeedSerializers
+from ...serializers.suscription_feed_serializer import FeedHelper
 from django.contrib.auth.models import User
-from django.core import serializers
-class SubscriptionFeedTest(APITestCase): 
+
+class SubscriptionFeedTest(APITestCase):
+
 
     @classmethod
     def setUpTestData(cls):
@@ -19,9 +19,8 @@ class SubscriptionFeedTest(APITestCase):
             self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + token)
 
 
-    def submit_post_creating_user_and_mock(self,username):
+    def submit_post_creating_user(self,username,data):
         self.create_and_login_user(username)
-        data = {"link": self.rss_url}
         self.client.post("/main_app/feed/", data)
         
     @patch.object(FeedHelper, 'parse_data')
@@ -54,8 +53,8 @@ class SubscriptionFeedTest(APITestCase):
     def test_two_user_creating_new_feed_only_creates_one(self, url_parser):
             mock_value = {'link': 'https://falseurl.com', 'title': "Mom", 'image': 'miimagen.com', }
             url_parser.return_value = mock_value
-            self.submit_post_creating_user_and_mock('newuser2')
-            self.submit_post_creating_user_and_mock('newuser1')
+            self.submit_post_creating_user('newuser2', {"link": self.rss_url})
+            self.submit_post_creating_user('newuser1', {"link": self.rss_url})
 
             user1 = User.objects.filter(username='newuser2')[0]
             user2 = User.objects.filter(username='newuser1')[0]
@@ -107,16 +106,17 @@ class SubscriptionFeedTest(APITestCase):
 
         mock_value = {'link': 'https://falseurl1.com', 'title': "Mom1", 'image': 'miimagen.com', }
         url_parser.return_value = mock_value
-        self.submit_post_creating_user_and_mock('newuser1')
+        self.submit_post_creating_user('newuser1', {"link": self.rss_url})
 
         mock_value = {'link': 'https://falseurl2.com', 'title': "Mom2", 'image': 'miimagen.com', }
         url_parser.return_value = mock_value
-        self.submit_post_creating_user_and_mock('newuser2')
 
+        self.submit_post_creating_user('newuser2', {"link": self.rss_url})
         resp = self.client.get("/main_app/feed/").json()
         self.assertEqual(resp[0]['link'], 'https://falseurl2.com')
         self.assertEqual(resp[0]['title'], 'Mom2')
         self.assertEqual(resp[0]['image'], None)
         self.assertEqual(len(resp),1)
 
-
+    def test_specific_url(self):
+        resp =self.submit_post_creating_user('newuser1', {"link": 'http://rss.cnn.com/rss/edition_travel.rss'})

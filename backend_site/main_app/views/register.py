@@ -15,7 +15,6 @@ class RegisterApi(generics.CreateAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
-      
         refresh_token = RefreshToken.for_user(user)
         return Response({
             "message": "User Created Successfully",

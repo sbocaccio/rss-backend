@@ -1,4 +1,6 @@
 from os import error
+
+from ..auxiliary.article_helper import ArticleHelper
 from ..models.subscription_feed_model import SubscriptionFeeds
 from rest_framework import  serializers
 from ..auxiliary.feed_helper import FeedHelper
@@ -41,6 +43,7 @@ class CreateFeedSerializers(serializers.ModelSerializer):
             )
 
         subscription.users_subscribed.add(user)
+        self._create_articles_for_subscription(subscription,parsed_data,user)
 
         return subscription
 
@@ -51,3 +54,11 @@ class CreateFeedSerializers(serializers.ModelSerializer):
         except AttributeError as error:
             raise serializers.ValidationError({'message': error}, code='400')
         return parse_data
+
+    def _create_articles_for_subscription(self,subscription,parsed_data,user):
+        if('entries' in parsed_data):
+            article_helper = ArticleHelper()
+            last_articles =  parsed_data['entries'][0:(min(10,len(parsed_data['entries'])))]
+            article_helper.createArticles(last_articles,subscription,user)
+
+

@@ -2,7 +2,6 @@ from rest_framework.generics import ListCreateAPIView
 from rest_framework.permissions import IsAuthenticated
 from ..models.subscription_feed_model import SubscriptionFeeds
 from ..serializers.suscription_feed_serializer import CreateFeedSerializers
-from rest_framework.response import Response
 from django.core import serializers
 
 

@@ -3,9 +3,6 @@ from django.contrib.auth.models import User
 from rest_framework import  serializers
 from django.contrib.auth.models import User
 
-
-
-
 class RegisterSerializer(serializers.ModelSerializer):
 
     def assert_existing_username(self, username):

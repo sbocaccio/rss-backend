@@ -11,6 +11,8 @@ class FeedHelper():
         parse_data = {}
         parse_data['link'] = data['link']
         parse_data['title'] = feed_parse.feed['title']
+        if('entries' in feed_parse):
+            parse_data['entries'] = feed_parse['entries']
         if ('image' in feed_parse.feed):
             parse_data['image'] = feed_parse.feed['image']['href']
         return parse_data
