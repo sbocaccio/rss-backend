@@ -1,11 +1,10 @@
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from ..serializers.login_serializer import LoginSerializers
 from django.contrib.auth.models import update_last_login
-from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework_simplejwt.tokens import RefreshToken
 
-
+from ..serializers.login_serializer import LoginSerializers
 
 
 class LoginAPIView(APIView):
@@ -22,6 +21,5 @@ class LoginAPIView(APIView):
             "message": 'You Succesfully loged in',
             'refresh': str(refresh_token),
             'access': str(refresh_token.access_token),
-    
-        })
 
+        })

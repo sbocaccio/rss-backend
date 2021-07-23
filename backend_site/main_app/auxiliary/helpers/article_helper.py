@@ -1,4 +1,4 @@
-from ..models import Article
+from ...models import Article
 from django.utils import timezone
 class ArticleHelper():
     def createArticles(self,articles,subscription,user):
