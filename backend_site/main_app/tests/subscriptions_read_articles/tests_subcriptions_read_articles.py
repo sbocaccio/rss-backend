@@ -77,7 +77,6 @@ class DisplayArticlesTest(APITestCase):
         url_parser.return_value = mock_value
         self.test_helper.submit_post_creating_user('newuser', {"link": self.rss_url}, self.client)
         resp = self.client.get('/main_app/subscriptions/2/articles/')
-        resp_articles = resp.json()
         self.assertEqual(resp.status_code, HTTPStatus.BAD_REQUEST)
         self.assertEqual(resp.json()['detail'], 'You are not subscribed to that feed. Subscribe first.')
 
@@ -92,4 +91,3 @@ class DisplayArticlesTest(APITestCase):
         resp_articles = resp.json()
         self.assertEqual(resp_articles[0]['title'], 'Title2')
         self.assertEqual(resp_articles[1]['title'], 'Title1')
-
