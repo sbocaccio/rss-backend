@@ -31,8 +31,8 @@ class CreateFeedSerializers(serializers.ModelSerializer):
             except:
                 parsed_data['image'] = ''
 
-        subscription, created = SubscriptionFeeds.objects.get_or_create(link=parsed_data['link'],
-                                                                        title=parsed_data['title'])
+        subscription, created = SubscriptionFeeds.objects.get_or_create(link=parsed_data['link'])
+        subscription.title = parsed_data['title']
 
         if (user in subscription.users_subscribed.all()):
             error = serializers.ValidationError({'message': 'User is already subscribed to that page.'})
@@ -50,7 +50,7 @@ class CreateFeedSerializers(serializers.ModelSerializer):
         if articles:
             for articles in articles:
                 subscription.subscription_articles.add(articles)
-
+        subscription.save()
         return subscription
 
     def _parse_data(self, validated_data):

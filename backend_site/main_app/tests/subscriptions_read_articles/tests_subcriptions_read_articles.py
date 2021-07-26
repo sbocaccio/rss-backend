@@ -66,9 +66,9 @@ class DisplayArticlesTest(APITestCase):
         resp_articles = resp.json()
         self.assertEqual(resp.status_code, HTTPStatus.OK)
         self.assertEqual(len(resp_articles), 1)
-        self.assertEqual(resp_articles[0]['title'], 'Title')
-        self.assertEqual(resp_articles[0]['link'], 'false_link')
-        self.assertEqual(resp_articles[0]['summary'], 'false_summary')
+        self.assertEqual(resp_articles[0]['article']['title'], 'Title')
+        self.assertEqual(resp_articles[0]['article']['link'], 'false_link')
+        self.assertEqual(resp_articles[0]['article']['summary'], 'false_summary')
 
     @patch.object(SubscriptionFeedHelper, 'parse_data')
     def test_user_can_not_receive_articles_of_a_subscription_is_not_subscribed(self, url_parser):
@@ -89,5 +89,5 @@ class DisplayArticlesTest(APITestCase):
         self.test_helper.submit_post_creating_user('newuser', {"link": self.rss_url}, self.client)
         resp = self.client.get('/main_app/subscriptions/1/articles/')
         resp_articles = resp.json()
-        self.assertEqual(resp_articles[0]['title'], 'Title2')
-        self.assertEqual(resp_articles[1]['title'], 'Title1')
+        self.assertEqual(resp_articles[0]['article']['title'], 'Title2')
+        self.assertEqual(resp_articles[1]['article']['title'], 'Title1')

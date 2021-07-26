@@ -1,4 +1,3 @@
-from django.core import serializers
 from rest_framework.generics import ListCreateAPIView
 from rest_framework.permissions import IsAuthenticated
 

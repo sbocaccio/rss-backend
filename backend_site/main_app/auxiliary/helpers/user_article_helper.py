@@ -1,7 +1,10 @@
+import os
 import urllib.request
+
 from django.core.files import File
 from django.utils import timezone
-import os
+
+from .feed_helper import SubscriptionFeedHelper
 from ...models.article import Article
 from ...models.user_article import UserArticle
 
@@ -9,12 +12,11 @@ from ...models.user_article import UserArticle
 class UserArticleHelper():
 
     def get_or_create_article(self, article, subscription):
-        article_fields = {}
-        article_fields['title'] = article['title']
-        article_fields['summary'] = article['summary']
-        article_fields['link'] = article['link']
-
-        article_model, created = Article.objects.get_or_create(**article_fields)
+        subscription_helper = SubscriptionFeedHelper()
+        subscription_helper.parse_data(article)
+        article_model, created = Article.objects.get_or_create(link=article['link'])
+        article_model.title = article['title']
+        article_model.summary = article['summary']
         article_model.date_time = timezone.now()
         article_model.subscriptions_feed.add(subscription)
 
@@ -30,7 +32,7 @@ class UserArticleHelper():
         article_model.save()
         return article_model
 
-    def get_or_create_user_article(self, article, user, subscription):
+    def get_or_create_user_article(self, article, user):
         user_article_fields = {}
         user_article_fields['article'] = article
         user_article_fields['user'] = user
@@ -43,7 +45,7 @@ class UserArticleHelper():
         for article in articles:
             article = self.get_or_create_article(article, subscription)
             created_articles.append(article)
-            self.get_or_create_user_article(article, user, subscription)
+            self.get_or_create_user_article(article, user)
         return created_articles
 
     def sort_by_date(self, user_articles):

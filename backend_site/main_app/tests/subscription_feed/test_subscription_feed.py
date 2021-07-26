@@ -78,7 +78,7 @@ class SubscriptionFeedTest(APITestCase):
         self.assertEqual(resp.data['message'], 'User is already subscribed to that page.')
 
     @patch.object(SubscriptionFeedHelper, 'parse_data')
-    def test_user_can_receives_her_subscriptions_using_api(self, url_parser):
+    def test_user_can_receives_her_subscriptions_using_get_request(self, url_parser):
         mock_value = {'link': 'https://falseurl.com', 'title': "Mom", 'image': 'miimagen.com', }
         url_parser.return_value = mock_value
         self.test_helper.create_and_login_user('newuser1', self.client)

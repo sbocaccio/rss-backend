@@ -7,12 +7,12 @@ from ..auxiliary.exceptions.not_subscribed_exception import NotSubscribedExcepti
 from ..models.article import Article
 from ..models.subscription_feed_model import SubscriptionFeeds
 from ..models.user_article import UserArticle
-from ..serializers.article_serializer import ArticleSerializers
+from ..serializers.user_article_serializer import UserArticleSerializers
 
 
 class ArticleAPI(ListAPIView):
     permission_classes = [IsAuthenticated]
-    serializer_class = ArticleSerializers
+    serializer_class = UserArticleSerializers
 
     class Meta:
         model = Article
@@ -27,7 +27,7 @@ class ArticleAPI(ListAPIView):
         except:
             raise NotSubscribedException()
         user_articles = UserArticle.objects.filter(article__subscriptions_feed__id=subscription_id, user=user)
-        return self.retrieve_articles_from_user_articles(user_articles)
+        return user_articles
 
     def retrieve_articles_from_user_articles(self, user_articles):
         articles = set()
