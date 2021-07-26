@@ -106,3 +106,4 @@ class SubscriptionFeedTest(APITestCase):
         self.assertEqual(resp[0]['title'], 'Mom2')
         self.assertEqual(resp[0]['image'], None)
         self.assertEqual(len(resp), 1)
+

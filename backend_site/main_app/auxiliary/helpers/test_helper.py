@@ -14,4 +14,5 @@ class TestUtils(TestCase):
 
     def submit_post_creating_user(self, username, data,client):
         self.create_and_login_user(username, client)
-        client.post("/main_app/feed/", data)
+        resp = client.post("/main_app/feed/", data)
+        return resp

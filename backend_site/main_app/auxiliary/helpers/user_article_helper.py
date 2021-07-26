@@ -12,8 +12,6 @@ from ...models.user_article import UserArticle
 class UserArticleHelper():
 
     def get_or_create_article(self, article, subscription):
-        subscription_helper = SubscriptionFeedHelper()
-        subscription_helper.parse_data(article)
         article_model, created = Article.objects.get_or_create(link=article['link'])
         article_model.title = article['title']
         article_model.summary = article['summary']
