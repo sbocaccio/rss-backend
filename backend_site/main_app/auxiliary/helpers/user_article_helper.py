@@ -1,7 +1,7 @@
 import urllib.request
 from django.core.files import File
 from django.utils import timezone
-
+import os
 from ...models.article import Article
 from ...models.user_article import UserArticle
 
@@ -21,14 +21,12 @@ class UserArticleHelper():
         if ('media_content' in article):
             try:
                 result = urllib.request.urlretrieve(article['media_content'][0]['url'])
+                article_model.image.save(
+                    os.path.basename(article['media_content'][0]['url']),
+                    File(open(result[0], 'rb')))
             except:
                 article_model['image'] = ''
 
-        if (article_model.image):
-            subscription.image.save(
-                os.path.basename(article['media_content'][0]['url']),
-                File(open(result[0], 'rb'))
-            )
         article_model.save()
         return article_model
 

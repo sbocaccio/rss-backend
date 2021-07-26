@@ -1,11 +1,9 @@
-from django.http import HttpResponse
-from rest_framework import serializers
-from rest_framework import status
+
 from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAuthenticated
 
 from ..auxiliary.exceptions.not_subscribed_exception import NotSubscribedException
-from ..auxiliary.helpers.user_article_helper import UserArticleHelper
+
 from ..models.article import Article
 from ..models.subscription_feed_model import SubscriptionFeeds
 from ..models.user_article import UserArticle
@@ -16,12 +14,16 @@ class ArticleAPI(ListAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = ArticleSerializers
 
+    class Meta:
+        model = Article
+        fields = ('id', 'title', 'summary', 'link', 'image')
+
     def get_queryset(self, ):
 
         user = self.request.user
         subscription_id = self.kwargs['id']
         try:
-            subscription = SubscriptionFeeds.objects.get(id=subscription_id, users_subscribed=user)
+            SubscriptionFeeds.objects.get(id=subscription_id, users_subscribed=user)
         except:
             raise NotSubscribedException()
         user_articles = UserArticle.objects.filter(article__subscriptions_feed__id=subscription_id, user=user)

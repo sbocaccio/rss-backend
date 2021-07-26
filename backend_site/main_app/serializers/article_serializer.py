@@ -8,4 +8,4 @@ from ..models.article import Article
 class ArticleSerializers(serializers.ModelSerializer):
     class Meta:
         model = Article
-        fields = ['link', 'title', 'summary', 'id']
+        fields = ['link', 'title', 'summary', 'id','image']

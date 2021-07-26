@@ -89,12 +89,7 @@ class DisplayArticlesTest(APITestCase):
         url_parser.return_value = mock_value
         self.test_helper.submit_post_creating_user('newuser', {"link": self.rss_url}, self.client)
         resp = self.client.get('/main_app/subscriptions/1/articles/')
-        articles = Article.objects.all()[0]
         resp_articles = resp.json()
         self.assertEqual(resp_articles[0]['title'], 'Title2')
         self.assertEqual(resp_articles[1]['title'], 'Title1')
 
-    def test_articles_are_received_in_inverse_date_time_when_there_are_many_articles(self):
-
-        self.test_helper.submit_post_creating_user('newuser', {"link": 'http://rss.cnn.com/rss/edition_africa.rss'}, self.client)
-        resp = self.client.get('/main_app/subscriptions/1/articles/')
