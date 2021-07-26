@@ -14,3 +14,5 @@ class SubscriptionFeedAPI(ListCreateAPIView):
         user = self.request.user
         user_subscriptions = SubscriptionFeeds.objects.filter(users_subscribed=user)
         return user_subscriptions
+
+

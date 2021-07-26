@@ -1,7 +1,7 @@
 import feedparser
 from http import HTTPStatus
 
-class FeedHelper():
+class SubscriptionFeedHelper():
     def parse_data(self, data):
         feed_parse = self._assert_can_parse(data)
         parse_data = self._select_fields(data, feed_parse)

@@ -4,8 +4,8 @@ from django.core.files import File
 from os import error
 from rest_framework import serializers
 
-from ..auxiliary.helpers.article_helper import ArticleHelper
-from ..auxiliary.helpers.feed_helper import FeedHelper
+from ..auxiliary.helpers.feed_helper import SubscriptionFeedHelper
+from ..auxiliary.helpers.user_article_helper import UserArticleHelper
 from ..models.subscription_feed_model import SubscriptionFeeds
 
 
@@ -46,13 +46,16 @@ class CreateFeedSerializers(serializers.ModelSerializer):
             )
 
         subscription.users_subscribed.add(user)
-        self._create_articles_for_subscription(subscription, parsed_data, user)
+        articles = self._create_articles_for_subscription(subscription, parsed_data, user)
+        if articles:
+            for articles in articles:
+                subscription.subscription_articles.add(articles)
 
         return subscription
 
     def _parse_data(self, validated_data):
         try:
-            feed_helper = FeedHelper()
+            feed_helper = SubscriptionFeedHelper()
             parse_data = feed_helper.parse_data(validated_data)
         except AttributeError as error:
             raise serializers.ValidationError({'message': error}, code='400')
@@ -60,6 +63,7 @@ class CreateFeedSerializers(serializers.ModelSerializer):
 
     def _create_articles_for_subscription(self, subscription, parsed_data, user):
         if ('entries' in parsed_data):
-            article_helper = ArticleHelper()
+            user_article_helper = UserArticleHelper()
             last_articles = parsed_data['entries'][0:(min(10, len(parsed_data['entries'])))]
-            article_helper.createArticles(last_articles, subscription, user)
+            articles =  user_article_helper.create_user_articles(last_articles, subscription, user)
+            return articles

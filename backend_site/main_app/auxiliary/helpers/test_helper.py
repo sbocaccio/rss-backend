@@ -3,7 +3,7 @@ from rest_framework.test import APIRequestFactory
 from rest_framework.test import APITestCase, APIClient
 
 
-class TestHelper(TestCase):
+class TestUtils(TestCase):
 
     def create_and_login_user(self, username, client):
         data = {"username": username, "password": 'password123', "email": 'newuser@gmail.com'}
