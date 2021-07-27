@@ -34,7 +34,7 @@ class CreateFeedSerializers(serializers.ModelSerializer):
         subscription, created = SubscriptionFeeds.objects.get_or_create(link=parsed_data['link'])
         subscription.title = parsed_data['title']
 
-        if (user in subscription.users_subscribed.all()):
+        if SubscriptionFeeds.objects.filter(users_subscribed= user,id = subscription.id):
             error = serializers.ValidationError({'message': 'User is already subscribed to that page.'})
             error.status_code = '409'
             raise error
@@ -48,8 +48,7 @@ class CreateFeedSerializers(serializers.ModelSerializer):
         subscription.users_subscribed.add(user)
         articles = self._create_articles_for_subscription(subscription, parsed_data, user)
         if articles:
-            for articles in articles:
-                subscription.subscription_articles.add(articles)
+            subscription.subscription_articles.add(*articles)
         subscription.save()
         return subscription
 
