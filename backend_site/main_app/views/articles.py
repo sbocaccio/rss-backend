@@ -26,12 +26,5 @@ class ArticleAPI(ListAPIView):
             SubscriptionFeeds.objects.get(id=subscription_id, users_subscribed=user)
         except:
             raise NotSubscribedException()
-        user_articles = UserArticle.objects.filter(article__subscriptions_feed__id=subscription_id, user=user)
+        user_articles = UserArticle.objects.filter(article__subscriptions_feed__id=subscription_id, user=user).select_related("article")
         return user_articles
-
-    def retrieve_articles_from_user_articles(self, user_articles):
-        articles = set()
-        for user_article in user_articles:
-            articles.add(user_article.article)
-        return articles
-
