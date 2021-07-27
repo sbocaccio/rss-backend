@@ -2,9 +2,7 @@ import os
 import urllib.request
 
 from django.core.files import File
-from django.utils import timezone
 
-from .feed_helper import SubscriptionFeedHelper
 from ...models.article import Article
 from ...models.user_article import UserArticle
 
@@ -15,7 +13,6 @@ class UserArticleHelper():
         article_model, created = Article.objects.get_or_create(link=article['link'])
         article_model.title = article['title']
         article_model.summary = article['summary']
-        article_model.date_time = timezone.now()
         article_model.subscriptions_feed.add(subscription)
 
         if ('media_content' in article):

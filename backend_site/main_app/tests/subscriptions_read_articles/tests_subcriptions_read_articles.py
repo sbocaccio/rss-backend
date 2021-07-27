@@ -91,3 +91,5 @@ class DisplayArticlesTest(APITestCase):
         resp_articles = resp.json()
         self.assertEqual(resp_articles[0]['article']['title'], 'Title2')
         self.assertEqual(resp_articles[1]['article']['title'], 'Title1')
+
+
