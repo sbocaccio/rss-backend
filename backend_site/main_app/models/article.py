@@ -8,7 +8,7 @@ class Article(models.Model):
    title = models.TextField(max_length=250)
    image = models.ImageField(null=True, blank=True)
    subscriptions_feed = models.ManyToManyField(SubscriptionFeeds)
-   created_at = models.DateTimeField(default = timezone.now())
+   created_at = models.DateTimeField(auto_now_add=True)
 
 
 
