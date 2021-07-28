@@ -1,17 +1,21 @@
-from os import error
-from ..models.subscription_feed_model import SubscriptionFeeds
-from rest_framework import  serializers
-from ..auxiliary.feed_helper import FeedHelper
-from django.core.files import File
-import urllib.request
 import os
+import urllib.request
+from django.core.files import File
+from os import error
+from rest_framework import serializers
+
+from ..auxiliary.helpers.feed_helper import SubscriptionFeedHelper
+from ..auxiliary.helpers.user_article_helper import UserArticleHelper
+from ..models.subscription_feed_model import SubscriptionFeeds
+
 
 class CreateFeedSerializers(serializers.ModelSerializer):
     link = serializers.URLField(max_length=255)
+
     class Meta:
         model = SubscriptionFeeds
-        fields = ['link','title','image']
-        read_only_fields = ['title', 'image']
+        fields = ['link', 'title', 'image', 'id']
+        read_only_fields = ['title', 'image', 'id']
 
     def create(self, validated_data):
         feed = self._create_feed(validated_data)
@@ -27,27 +31,38 @@ class CreateFeedSerializers(serializers.ModelSerializer):
             except:
                 parsed_data['image'] = ''
 
-        subscription,created = SubscriptionFeeds.objects.get_or_create(link = parsed_data['link'],title = parsed_data['title'])
+        subscription, created = SubscriptionFeeds.objects.get_or_create(link=parsed_data['link'])
+        subscription.title = parsed_data['title']
 
-        if (user in subscription.users_subscribed.all()):
+        if SubscriptionFeeds.objects.filter(users_subscribed= user,id = subscription.id):
             error = serializers.ValidationError({'message': 'User is already subscribed to that page.'})
             error.status_code = '409'
             raise error
 
-        if('image' in parsed_data and parsed_data['image']):
+        if ('image' in parsed_data and parsed_data['image']):
             subscription.image.save(
                 os.path.basename(parsed_data['link']),
                 File(open(result[0], 'rb'))
             )
 
         subscription.users_subscribed.add(user)
-
+        articles = self._create_articles_for_subscription(subscription, parsed_data, user)
+        if articles:
+            subscription.subscription_articles.add(*articles)
+        subscription.save()
         return subscription
 
     def _parse_data(self, validated_data):
         try:
-            feed_helper = FeedHelper()
+            feed_helper = SubscriptionFeedHelper()
             parse_data = feed_helper.parse_data(validated_data)
         except AttributeError as error:
             raise serializers.ValidationError({'message': error}, code='400')
         return parse_data
+
+    def _create_articles_for_subscription(self, subscription, parsed_data, user):
+        if ('entries' in parsed_data):
+            user_article_helper = UserArticleHelper()
+            last_articles = parsed_data['entries'][0:(min(10, len(parsed_data['entries'])))]
+            articles =  user_article_helper.create_user_articles(last_articles, subscription, user)
+            return articles
