@@ -18,7 +18,7 @@ class ArticleAPI(ListAPIView):
         model = Article
         fields = ('id', 'title', 'summary', 'link', 'image')
 
-    def get_queryset(self, ):
+    def get_queryset(self):
 
         user = self.request.user
         subscription_id = self.kwargs['id']

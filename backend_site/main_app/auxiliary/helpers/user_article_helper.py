@@ -20,15 +20,15 @@ class UserArticleHelper():
         return article_model
 
     def add_image_to_article(self, article, article_model):
-        media = ''
+        image = ''
         if ('media_content' in article):
-            media = article['media_content'][0]['url']
+            image = article['media_content'][0]['url']
         elif 'links' in article and 'href' in article['links'][1]:
-            media = article['links'][1]['href']
+            image = article['links'][1]['href']
             try:
-                result = urllib.request.urlretrieve(media)
+                result = urllib.request.urlretrieve(image)
                 article_model.image.save(
-                    os.path.basename(media),
+                    os.path.basename(image),
                     File(open(result[0], 'rb')))
             except:
                 article_model['image'] = ''
@@ -56,6 +56,11 @@ class UserArticleHelper():
 
 
     def delete_user_articles_from_subscription(self, user):
+        '''
+        This method deletes the user_articles of the user if that article it is not in other subscription the user is subscribed.
+        It also deletes the articles that are not matched to any user ( this user was the last one) because they are not going to be read anymore.
+        '''
+
         user_articles_to_delete = UserArticle.objects.annotate(
             num_subscription=Count('article__subscriptions_feed')).filter(user=user, num_subscription=1)
         articles_id_of_user_articles = list(user_articles_to_delete.values_list('article_id', flat=True))
@@ -63,6 +68,6 @@ class UserArticleHelper():
         still_readable_articles_id = list(UserArticle.objects.filter(article__id__in  = articles_id_of_user_articles).values_list('article_id', flat=True))
         self._delete_not_more_readable_articles(articles_id_of_user_articles,still_readable_articles_id)
 
-    def _delete_not_more_readable_articles(self, articles_to_delete_id,id_de_articulos_que_tienen_lectores):
-        articles_to_delete = Article.objects.filter(pk__in=articles_to_delete_id).exclude(pk__in= id_de_articulos_que_tienen_lectores)
+    def _delete_not_more_readable_articles(self, articles_id_of_user_articles,still_readable_articles_id):
+        articles_to_delete = Article.objects.filter(pk__in=articles_id_of_user_articles).exclude(pk__in= still_readable_articles_id)
         articles_to_delete.delete()
