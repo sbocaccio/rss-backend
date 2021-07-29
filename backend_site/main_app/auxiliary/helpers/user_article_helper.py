@@ -1,7 +1,7 @@
 import os
 import urllib.request
-
 from django.core.files import File
+from django.db.models import Count
 
 from ...models.article import Article
 from ...models.user_article import UserArticle
@@ -47,3 +47,16 @@ class UserArticleHelper():
         user_articles_list = list(user_articles)
         user_articles_list.sort(key=lambda user_article: user_article.date_time, reverse=True)
         return user_articles_list
+
+
+    def delete_user_articles_from_subscription(self, user):
+        user_articles_to_delete = UserArticle.objects.annotate(
+            num_subscription=Count('article__subscriptions_feed')).filter(user=user, num_subscription=1)
+        articles_id_of_user_articles = list(user_articles_to_delete.values_list('article_id', flat=True))
+        user_articles_to_delete.delete()
+        still_readable_articles_id = list(UserArticle.objects.filter(article__id__in  = articles_id_of_user_articles).values_list('article_id', flat=True))
+        self._delete_not_more_readable_articles(articles_id_of_user_articles,still_readable_articles_id)
+
+    def _delete_not_more_readable_articles(self, articles_to_delete_id,id_de_articulos_que_tienen_lectores):
+        articles_to_delete = Article.objects.filter(pk__in=articles_to_delete_id).exclude(pk__in= id_de_articulos_que_tienen_lectores)
+        articles_to_delete.delete()
