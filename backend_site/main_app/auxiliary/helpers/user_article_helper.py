@@ -14,18 +14,24 @@ class UserArticleHelper():
         article_model.title = article['title']
         article_model.summary = article['summary']
         article_model.subscriptions_feed.add(subscription)
-
-        if ('media_content' in article):
-            try:
-                result = urllib.request.urlretrieve(article['media_content'][0]['url'])
-                article_model.image.save(
-                    os.path.basename(article['media_content'][0]['url']),
-                    File(open(result[0], 'rb')))
-            except:
-                article_model['image'] = ''
+        self.add_image_to_article(article, article_model)
 
         article_model.save()
         return article_model
+
+    def add_image_to_article(self, article, article_model):
+        media = ''
+        if ('media_content' in article):
+            media = article['media_content'][0]['url']
+        elif 'links' in article and 'href' in article['links'][1]:
+            media = article['links'][1]['href']
+            try:
+                result = urllib.request.urlretrieve(media)
+                article_model.image.save(
+                    os.path.basename(media),
+                    File(open(result[0], 'rb')))
+            except:
+                article_model['image'] = ''
 
     def get_or_create_user_article(self, article, user):
         user_article_fields = {}

@@ -39,8 +39,6 @@ class DeleteSubscriptionsTest(APITestCase):
         self.client.delete('/main_app/feed/', data)
         self.assertEqual(len(UserArticle.objects.all()), 0)
 
-
-
     @patch.object(SubscriptionFeedHelper, 'parse_data')
     def test_subscription_object_is_not_deleted_when_there_are_other_readers(self, url_parser):
         mock_value = {'link': 'https://falseurl.com', 'title': "Mom",
