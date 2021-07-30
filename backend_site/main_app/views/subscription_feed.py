@@ -9,9 +9,9 @@ from ..models.article import Article
 from ..models.subscription_feed_model import SubscriptionFeeds
 from ..models.user_article import UserArticle
 from ..serializers.suscription_feed_serializer import CreateFeedSerializers
+from rest_framework import viewsets
 
-
-class SubscriptionFeedAPI(ListCreateAPIView):
+class SubscriptionFeedAPI(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = CreateFeedSerializers
 
@@ -20,7 +20,7 @@ class SubscriptionFeedAPI(ListCreateAPIView):
         user_subscriptions = SubscriptionFeeds.objects.filter(users_subscribed=user)
         return user_subscriptions
 
-    def delete(self,*args,**kwargs):
+    def destroy(self,*args,**kwargs):
         subscription = self.check_user_is_subscribed_to_subscription(kwargs['id'],self.request.user)
         self.delete_user_articles_from_user(self.request)
         subscription.users_subscribed.remove(self.request.user)
@@ -40,3 +40,4 @@ class SubscriptionFeedAPI(ListCreateAPIView):
         except:
             raise NotSubscribedException()
         return subscription
+

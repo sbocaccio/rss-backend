@@ -23,7 +23,7 @@ class DeleteSubscriptionsTest(APITestCase):
         user = User.objects.first()
         subscription = SubscriptionFeeds.objects.create(link='https://falseurl.com')
         subscription.users_subscribed.add(user)
-        resp = self.client.delete('/main_app/subscriptions/1/delete/')
+        resp = self.client.delete('/main_app/subscriptions/1/')
         self.assertEqual(resp.status_code, HTTPStatus.NO_CONTENT)
         self.assertEqual(len(SubscriptionFeeds.objects.all()), 0)
 
@@ -33,7 +33,7 @@ class DeleteSubscriptionsTest(APITestCase):
                       'entries': [{'title': 'Title', 'link': 'falselink', 'summary': 'false_summary'}]}
         url_parser.return_value = mock_value
         self.test_helper.submit_post_creating_user('newuser', {"link": self.rss_url}, self.client)
-        resp = self.client.delete('/main_app/subscriptions/1/delete/')
+        resp = self.client.delete('/main_app/subscriptions/1/')
         self.assertEqual(len(UserArticle.objects.all()), 0)
 
 
@@ -45,7 +45,7 @@ class DeleteSubscriptionsTest(APITestCase):
         subscription.users_subscribed.add(user1)
         subscription.users_subscribed.add(user2)
         self.assertEqual(len(SubscriptionFeeds.objects.all()), 1)
-        self.client.delete('/main_app/subscriptions/1/delete/')
+        self.client.delete('/main_app/subscriptions/1/')
         self.assertEqual(len(SubscriptionFeeds.objects.all()), 1)
 
     def test_user_cannot_deleted_a_subscription_is_not_subscribe(self):
@@ -55,13 +55,13 @@ class DeleteSubscriptionsTest(APITestCase):
         self.test_helper.create_and_login_user('newuser', self.client)
 
         self.assertEqual(len(SubscriptionFeeds.objects.all()), 1)
-        resp = self.client.delete('/main_app/subscriptions/1/delete/')
+        resp = self.client.delete('/main_app/subscriptions/1/')
         self.assertEqual(resp.data['detail'], 'You are not subscribed to that feed. Subscribe first.')
         self.assertEqual(len(SubscriptionFeeds.objects.all()), 1)
 
     def test_user_cannot_deleted_a_not_existent_subscription(self):
         self.test_helper.create_and_login_user('newuser',self.client)
-        resp = self.client.delete('/main_app/subscriptions/1/delete/')
+        resp = self.client.delete('/main_app/subscriptions/1/')
         self.assertEqual(resp.data['detail'], 'You are not subscribed to that feed. Subscribe first.')
         self.assertEqual(len(SubscriptionFeeds.objects.all()), 0)
 
@@ -72,7 +72,7 @@ class DeleteSubscriptionsTest(APITestCase):
         url_parser.return_value = mock_value
         self.test_helper.submit_post_creating_user('newuser', {"link": self.rss_url}, self.client)
         self.assertEqual(len(Article.objects.all()), 1)
-        self.client.delete('/main_app/subscriptions/1/delete/')
+        self.client.delete('/main_app/subscriptions/1/')
         self.assertEqual(len(Article.objects.all()), 0)
 
     @patch.object(SubscriptionFeedHelper, 'parse_data')
@@ -83,7 +83,7 @@ class DeleteSubscriptionsTest(APITestCase):
         self.test_helper.submit_post_creating_user('newuser', {"link": self.rss_url}, self.client)
         self.test_helper.submit_post_creating_user('newuser2', {"link": self.rss_url}, self.client)
         self.assertEqual(len(Article.objects.all()), 1)
-        self.client.delete('/main_app/subscriptions/1/delete/')
+        self.client.delete('/main_app/subscriptions/1/')
         self.assertEqual(len(Article.objects.all()), 1)
 
     @patch.object(SubscriptionFeedHelper, 'parse_data')
@@ -98,6 +98,6 @@ class DeleteSubscriptionsTest(APITestCase):
         url_parser.return_value = mock_value
         self.client.post("/main_app/feed/", {"link": self.rss_url})
         self.assertEqual(len(UserArticle.objects.all()), 1)
-        self.client.delete('/main_app/subscriptions/1/delete/')
+        self.client.delete('/main_app/subscriptions/1/')
         self.assertEqual(len(UserArticle.objects.all()), 1)
 
