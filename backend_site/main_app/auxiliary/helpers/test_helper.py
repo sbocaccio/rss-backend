@@ -16,3 +16,5 @@ class TestUtils(TestCase):
         self.create_and_login_user(username, client)
         resp = client.post("/main_app/feed/", data)
         return resp
+
+
