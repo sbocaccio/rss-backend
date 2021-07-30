@@ -25,6 +25,8 @@ class UserArticleHelper():
             image = article['media_content'][0]['url']
         elif 'links' in article and 'href' in article['links'][1]:
             image = article['links'][1]['href']
+
+        if image:
             try:
                 result = urllib.request.urlretrieve(image)
                 article_model.image.save(
