@@ -42,8 +42,7 @@ class SubscriptionFeedTest(APITestCase):
 
     @patch.object(SubscriptionFeedHelper, 'parse_data')
     def test_two_user_creating_new_feed_only_creates_one(self, url_parser):
-        mock_value = {'link': 'https://falseurl.com', 'title': "Mom", 'image': 'miimagen.com', }
-        url_parser.return_value = mock_value
+        url_parser.return_value = self.test_helper.false_subscription
         self.test_helper.submit_post_creating_user('newuser2', {"link": self.rss_url}, self.client)
         self.test_helper.submit_post_creating_user('newuser1', {"link": self.rss_url}, self.client)
 
@@ -57,8 +56,7 @@ class SubscriptionFeedTest(APITestCase):
 
     @patch.object(SubscriptionFeedHelper, 'parse_data')
     def test_createFeed_response_includes_information_of_the_model(self, url_parser):
-        mock_value = {'link': 'https://falseurl.com', 'title': "Mom", 'image': 'miimagen.com', }
-        url_parser.return_value = mock_value
+        url_parser.return_value = self.test_helper.false_subscription
         self.test_helper.create_and_login_user('newuser1', self.client)
         data = {"link": self.rss_url}
         resp = self.client.post("/main_app/feed/", data).json()
@@ -69,8 +67,7 @@ class SubscriptionFeedTest(APITestCase):
 
     @patch.object(SubscriptionFeedHelper, 'parse_data')
     def test_user_can_not_subscribe_twice_to_a_feed(self, url_parser):
-        mock_value = {'link': 'https://falseurl.com', 'title': "Mom", 'image': 'miimagen.com', }
-        url_parser.return_value = mock_value
+        url_parser.return_value = self.test_helper.false_subscription
         self.test_helper.create_and_login_user('newuser1', self.client)
         data = {"link": self.rss_url}
         self.client.post("/main_app/feed/", data)
@@ -79,8 +76,7 @@ class SubscriptionFeedTest(APITestCase):
 
     @patch.object(SubscriptionFeedHelper, 'parse_data')
     def test_user_can_receives_her_subscriptions_using_get_request(self, url_parser):
-        mock_value = {'link': 'https://falseurl.com', 'title': "Mom", 'image': 'miimagen.com', }
-        url_parser.return_value = mock_value
+        url_parser.return_value = self.test_helper.false_subscription
         self.test_helper.create_and_login_user('newuser1', self.client)
         data = {"link": self.rss_url}
         self.client.post("/main_app/feed/", data)

@@ -29,9 +29,7 @@ class DeleteSubscriptionsTest(APITestCase):
 
     @patch.object(SubscriptionFeedHelper, 'parse_data')
     def test_user_article_is_deleted_when_user_delete_its_subscription(self, url_parser):
-        mock_value = {'link': 'https://falseurl.com', 'title': "Mom",
-                      'entries': [{'title': 'Title', 'link': 'falselink', 'summary': 'false_summary'}]}
-        url_parser.return_value = mock_value
+        url_parser.return_value = self.test_helper.false_subscription
         self.test_helper.submit_post_creating_user('newuser', {"link": self.rss_url}, self.client)
         resp = self.client.delete('/main_app/subscriptions/1/')
         self.assertEqual(len(UserArticle.objects.all()), 0)
@@ -67,19 +65,21 @@ class DeleteSubscriptionsTest(APITestCase):
 
     @patch.object(SubscriptionFeedHelper, 'parse_data')
     def test_article_is_deleted_when_there_are_not_readers(self, url_parser):
-        mock_value = {'link': 'https://falseurl.com', 'title': "Mom",
-                      'entries': [{'title': 'Title', 'link': 'falselink', 'summary': 'false_summary'}]}
-        url_parser.return_value = mock_value
+        url_parser.return_value = self.test_helper.false_subscription_with_10_articles
         self.test_helper.submit_post_creating_user('newuser', {"link": self.rss_url}, self.client)
-        self.assertEqual(len(Article.objects.all()), 1)
-        self.client.delete('/main_app/subscriptions/1/')
+
+        subscription_id = SubscriptionFeeds.objects.get().id
+        link  = '/main_app/subscriptions/' + str(subscription_id) + '/'
+        self.assertEqual(len(Article.objects.all()), 10)
+        self.client.delete(link)
+        self.assertEqual(len(SubscriptionFeeds.objects.all()), 0)
         self.assertEqual(len(Article.objects.all()), 0)
+
+
 
     @patch.object(SubscriptionFeedHelper, 'parse_data')
     def test_article_is_not_deleted_when_there_are_other_readers(self, url_parser):
-        mock_value = {'link': 'https://falseurl.com', 'title': "Mom",
-                      'entries': [{'title': 'Title', 'link': 'falselink', 'summary': 'false_summary'}]}
-        url_parser.return_value = mock_value
+        url_parser.return_value = self.test_helper.false_subscription
         self.test_helper.submit_post_creating_user('newuser', {"link": self.rss_url}, self.client)
         self.test_helper.submit_post_creating_user('newuser2', {"link": self.rss_url}, self.client)
         self.assertEqual(len(Article.objects.all()), 1)
