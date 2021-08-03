@@ -3,13 +3,13 @@ from http import HTTPStatus
 from rest_framework import serializers
 
 from .user_article_helper import UserArticleHelper
-from ..exceptions.not_subscribed_exception import NotSubscribedException
 from ...models.subscription_feed_model import SubscriptionFeeds
+
 from ...models.user_article import UserArticle
 
 
-
 class SubscriptionFeedHelper():
+    MAX_PERMITTED_ARTICLES = 10
     def parse_data(self, data):
         feed_parse = self._assert_can_parse(data)
         parse_data = self._select_fields(data, feed_parse)
@@ -42,6 +42,9 @@ class SubscriptionFeedHelper():
 
         user_article_helper = UserArticleHelper()
         user_article_helper.remove_old_user_articles_from_subscription_and_user(subscription, user)
+        updated_articles = UserArticle.objects.filter(article__in=list(subscription.subscription_articles.all()),
+                                   user=user).order_by('-article__created_at')
+        return updated_articles
 
 
 

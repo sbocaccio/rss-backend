@@ -35,7 +35,7 @@ class RefreshSubscriptionsTest(APITestCase):
     @patch.object(SubscriptionFeedHelper, 'parse_data')
     def test_user_old_articles_are_not_deleted_when_max_limit_not_passed(self, url_parser):
         url_parser.return_value = self.test_helper.false_subscription
-        resp = self.test_helper.submit_post_creating_user('newuser', {"link": self.rss_url}, self.client)
+        self.test_helper.submit_post_creating_user('newuser', {"link": self.rss_url}, self.client)
         self.assertEqual(len(Article.objects.all()), 1)
         url_parser.return_value = self.test_helper.false_subscription_with_other_articles
         resp = self.client.put('/main_app/subscriptions/1/').data
@@ -44,10 +44,19 @@ class RefreshSubscriptionsTest(APITestCase):
     @patch.object(SubscriptionFeedHelper, 'parse_data')
     def test_user_old_articles_are_deleted_when_max_limit_is_passed(self, url_parser):
         url_parser.return_value = self.test_helper.false_subscription
-        resp = self.test_helper.submit_post_creating_user('newuser', {"link": self.rss_url}, self.client)
+        self.test_helper.submit_post_creating_user('newuser', {"link": self.rss_url}, self.client)
         self.assertEqual(len(Article.objects.all()), 1)
         url_parser.return_value = self.test_helper.false_subscription_with_10_articles
         resp = self.client.put('/main_app/subscriptions/1/').data
         self.assertEqual(len(Article.objects.all()), 10)
 
+    @patch.object(SubscriptionFeedHelper, 'parse_data')
+    def test_user_articles_are_received_in_correct_order_after_updating(self, url_parser):
+        url_parser.return_value = self.test_helper.false_subscription
+        self.test_helper.submit_post_creating_user('newuser', {"link": self.rss_url}, self.client)
+        self.assertEqual(len(Article.objects.all()), 1)
+        url_parser.return_value = self.test_helper.false_subscription_with_other_articles
+        resp = self.client.put('/main_app/subscriptions/1/').data
+        self.assertEqual(resp[0]['article']['title'] , 'Title2')
+        self.assertEqual(resp[1]['article']['title'], 'Title')
 

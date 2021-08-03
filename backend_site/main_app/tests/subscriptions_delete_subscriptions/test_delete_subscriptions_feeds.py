@@ -65,14 +65,15 @@ class DeleteSubscriptionsTest(APITestCase):
 
     @patch.object(SubscriptionFeedHelper, 'parse_data')
     def test_article_is_deleted_when_there_are_not_readers(self, url_parser):
-        url_parser.return_value = self.test_helper.false_subscription_with_10_articles
+        url_parser.return_value = self.test_helper.false_subscription_with_other_articles
         self.test_helper.submit_post_creating_user('newuser', {"link": self.rss_url}, self.client)
 
         subscription_id = SubscriptionFeeds.objects.get().id
         link  = '/main_app/subscriptions/' + str(subscription_id) + '/'
-        self.assertEqual(len(Article.objects.all()), 10)
-        self.client.delete(link)
+        self.assertEqual(len(Article.objects.all()), 1)
+        resp = self.client.delete(link)
         self.assertEqual(len(SubscriptionFeeds.objects.all()), 0)
+        self.assertEqual(len(UserArticle.objects.all()), 0)
         self.assertEqual(len(Article.objects.all()), 0)
 
 
