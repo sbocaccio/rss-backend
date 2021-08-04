@@ -32,9 +32,7 @@ class SubscriptionFeedHelper():
         return feed_parse
 
     def update_subscription(self, subscription, user):
-        subscription_link = {
-            "link": subscription.link
-        }
+        subscription_link = {"link": subscription.link}
         parsed_data = self._parse_data(subscription_link)
         articles, new_articles_cant = self._update_articles_for_subscription(subscription, parsed_data, user)
         if articles:
@@ -46,7 +44,6 @@ class SubscriptionFeedHelper():
         updated_articles = UserArticle.objects.all_user_articles_from_user_and_subscription_sorted_descending_date_order(
             user, subscription)
         return updated_articles, new_articles_cant
-
     def _update_articles_for_subscription(self, subscription, parsed_data, user):
         if ('entries' in parsed_data):
             user_article_helper = UserArticleHelper()

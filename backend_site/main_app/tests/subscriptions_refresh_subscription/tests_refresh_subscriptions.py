@@ -59,8 +59,8 @@ class RefreshSubscriptionsTest(APITestCase):
         self.assertEqual(len(Article.objects.all()), 1)
         url_parser.return_value = self.test_helper.false_subscription_with_other_articles
         resp = self.client.put('/main_app/subscriptions/1/').data
-        self.assertEqual(resp['data'][0]['article']['title'], 'Title2')
-        self.assertEqual(resp['data'][1]['article']['title'], 'Title')
+        self.assertEqual(resp['user_articles'][0]['article']['title'], 'Title2')
+        self.assertEqual(resp['user_articles'][1]['article']['title'], 'Title')
 
     @patch.object(SubscriptionFeedHelper, 'parse_data')
     def test_user_receives_number_of_new_articles_after_updating(self, url_parser):
@@ -69,11 +69,11 @@ class RefreshSubscriptionsTest(APITestCase):
         self.assertEqual(len(Article.objects.all()), 1)
         url_parser.return_value = self.test_helper.false_subscription_with_other_articles
         resp = self.client.put('/main_app/subscriptions/1/').data
-        self.assertEqual(resp['new_articles'], 1)
+        self.assertEqual(resp['number_of_new_articles'], 1)
         self.assertEqual(len(Article.objects.all()), 2)
         url_parser.return_value = self.test_helper.false_subscription_with_10_articles
         resp = self.client.put('/main_app/subscriptions/1/').data
-        self.assertEqual(resp['new_articles'], 10)
+        self.assertEqual(resp['number_of_new_articles'], 10)
 
 
 

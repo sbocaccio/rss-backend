@@ -34,7 +34,7 @@ class UserArticleHelper():
                     os.path.basename(image),
                     File(open(result[0], 'rb')))
         except:
-            article_model['image'] = ''
+            article_model.image = None
 
     def get_or_create_user_article(self, article, user):
         user_article_fields = {}
