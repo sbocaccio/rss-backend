@@ -52,4 +52,8 @@ class SubscriptionFeedAPI(viewsets.ModelViewSet):
         subscription_helper = SubscriptionFeedHelper()
         user_articles,number_of_new_articles = subscription_helper.update_subscription(subscription, self.request.user)
         data=UserArticleSerializers(instance= user_articles, many= True)
-        return Response(data.data)
+        response = {
+            'new_articles': number_of_new_articles,
+            'data': data.data
+        }
+        return Response(response)
