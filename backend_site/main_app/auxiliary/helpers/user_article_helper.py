@@ -46,15 +46,15 @@ class UserArticleHelper():
 
     def create_user_articles(self, articles, subscription, user):
         articles.reverse()  # Newer feeds must be the latest created.
-        created_articles = []
+        all_articles = []
         articles_created = 0
         for article in articles:
             article,created = self.get_or_create_article(article, subscription)
+            all_articles.append(article)
+            self.get_or_create_user_article(article, user)
             if(created):
                 articles_created+=1
-            created_articles.append(article)
-            self.get_or_create_user_article(article, user)
-        return created_articles,articles_created
+        return all_articles,articles_created
 
     def delete_all_user_articles_from_subscription(self, user,articles_of_subscription):
         no_more_readable_user_article = UserArticle.objects.not_more_readable_user_articles_from_user_and_subscription(user,articles_of_subscription)
@@ -81,8 +81,8 @@ class UserArticleHelper():
         articles_to_delete.delete()
 
     def remove_old_user_articles_from_subscription_and_user(self, subscription, user):
-        updated_user_articles = UserArticle.objects.all_user_articles_from_user_and_subscription_sorted_ascending_date_order(user,subscription).values_list('id',flat=True)
-        if (len(updated_user_articles) > MAX_PERMITTED_ARTICLES):
-            user_articles_to_be_deleted_id = updated_user_articles[:len(updated_user_articles) - MAX_PERMITTED_ARTICLES]
+        updated_user_articles_id = UserArticle.objects.all_user_articles_from_user_and_subscription_sorted_ascending_date_order(user,subscription).values_list('id',flat=True)
+        if (len(updated_user_articles_id) > MAX_PERMITTED_ARTICLES):
+            user_articles_to_be_deleted_id = updated_user_articles_id[:len(updated_user_articles_id) - MAX_PERMITTED_ARTICLES]
             user_articles_to_be_deleted = UserArticle.objects.filter(id__in=user_articles_to_be_deleted_id)
             self.delete_user_articles_from_subscription(user_articles_to_be_deleted)
