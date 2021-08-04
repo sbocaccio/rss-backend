@@ -44,7 +44,7 @@ class SubscriptionFeedHelper():
         user_article_helper.remove_old_user_articles_from_subscription_and_user(subscription, user)
         updated_articles = UserArticle.objects.filter(article__in=list(subscription.subscription_articles.all()),
                                    user=user).order_by('-article__created_at')
-        return updated_articles
+        return updated_articles,len(articles)
 
 
 

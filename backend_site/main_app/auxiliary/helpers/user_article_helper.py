@@ -53,9 +53,9 @@ class UserArticleHelper():
             self.get_or_create_user_article(article, user)
         return created_articles
 
-    def delete_all_user_articles_from_subscription(self, user):
+    def delete_all_user_articles_from_subscription(self, user,articles_of_subscription):
         all_user_article_from_user = UserArticle.objects.annotate(
-            num_subscription=Count('article__subscriptions_feed')).filter(user=user, num_subscription=1)
+            num_subscription=Count('article__subscriptions_feed')).filter(user=user, num_subscription=1,article__in= articles_of_subscription)
         self.delete_user_articles_from_subscription(all_user_article_from_user)
 
     def delete_user_articles_from_subscription(self, user_articles_to_delete):
