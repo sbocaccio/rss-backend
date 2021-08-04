@@ -4,12 +4,12 @@ from rest_framework import serializers
 
 from .user_article_helper import UserArticleHelper
 from ...models.subscription_feed_model import SubscriptionFeeds
-
 from ...models.user_article import UserArticle
 
 
 class SubscriptionFeedHelper():
     MAX_PERMITTED_ARTICLES = 10
+
     def parse_data(self, data):
         feed_parse = self._assert_can_parse(data)
         parse_data = self._select_fields(data, feed_parse)
@@ -36,28 +36,23 @@ class SubscriptionFeedHelper():
             "link": subscription.link
         }
         parsed_data = self._parse_data(subscription_link)
-        articles , new_articles_cant = self._update_articles_for_subscription(subscription, parsed_data, user)
+        articles, new_articles_cant = self._update_articles_for_subscription(subscription, parsed_data, user)
         if articles:
             subscription.subscription_articles.add(*articles)
             subscription.save()
 
         user_article_helper = UserArticleHelper()
         user_article_helper.remove_old_user_articles_from_subscription_and_user(subscription, user)
-        updated_articles = UserArticle.objects.filter(article__in=list(subscription.subscription_articles.all()),
-                                   user=user).order_by('-article__created_at')
-        return updated_articles,new_articles_cant
+        updated_articles = UserArticle.objects.all_user_articles_from_user_and_subscription_sorted_descending_date_order(
+            user, subscription)
+        return updated_articles, new_articles_cant
 
-
-
-
-    def _update_articles_for_subscription(self,subscription, parsed_data, user):
+    def _update_articles_for_subscription(self, subscription, parsed_data, user):
         if ('entries' in parsed_data):
             user_article_helper = UserArticleHelper()
             newest_articles = parsed_data['entries'][0:(min(10, len(parsed_data['entries'])))]
-            articles , new_articles_cant = user_article_helper.create_user_articles(newest_articles,subscription,user)
-            return articles,new_articles_cant
-
-
+            articles, new_articles_cant = user_article_helper.create_user_articles(newest_articles, subscription, user)
+            return articles, new_articles_cant
 
     def _create_feed(self, validated_data, user):
         parsed_data = self._parse_data(validated_data)
@@ -101,5 +96,5 @@ class SubscriptionFeedHelper():
         if ('entries' in parsed_data):
             user_article_helper = UserArticleHelper()
             last_articles = parsed_data['entries'][0:(min(10, len(parsed_data['entries'])))]
-            articles, new_articles_cant  = user_article_helper.create_user_articles(last_articles, subscription, user)
+            articles, new_articles_cant = user_article_helper.create_user_articles(last_articles, subscription, user)
             return articles

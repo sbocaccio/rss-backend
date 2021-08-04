@@ -23,8 +23,8 @@ class ArticleAPI(ListAPIView):
         user = self.request.user
         subscription_id = self.kwargs['pk']
         try:
-            SubscriptionFeeds.objects.get(id=subscription_id, users_subscribed=user)
+            subscription = SubscriptionFeeds.objects.get(id=subscription_id, users_subscribed=user)
         except:
             raise NotSubscribedException()
-        user_articles = UserArticle.objects.filter(article__subscriptions_feed__id=subscription_id, user=user).select_related("article").order_by('-article__created_at')
+        user_articles = UserArticle.objects.all_user_articles_from_user_and_subscription_sorted_descending_date_order(user,subscription)
         return user_articles

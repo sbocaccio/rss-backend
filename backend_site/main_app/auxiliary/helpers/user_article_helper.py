@@ -69,8 +69,7 @@ class UserArticleHelper():
         articles_id_of_user_articles = [user_article.article.id for user_article in user_articles_to_delete_list]
         user_articles_to_delete.delete()
         still_readable_articles_id = list(
-            UserArticle.objects.filter(article__id__in=articles_id_of_user_articles).values_list('article_id',
-                                                                                                 flat=True))
+            UserArticle.objects.user_articles_of_articles_id(articles_id_of_user_articles).values_list('article_id',flat=True))
 
         self._delete_not_more_readable_articles(articles_id_of_user_articles, still_readable_articles_id)
 
@@ -82,7 +81,7 @@ class UserArticleHelper():
         articles_to_delete.delete()
 
     def remove_old_user_articles_from_subscription_and_user(self, subscription, user):
-        updated_user_articles = UserArticle.objects.all_user_articles_sorted_by_order_from_user_and_subscription(user,subscription)
+        updated_user_articles = UserArticle.objects.all_user_articles_from_user_and_subscription_sorted_ascending_date_order(user,subscription).values_list('id',flat=True)
         if (len(updated_user_articles) > MAX_PERMITTED_ARTICLES):
             user_articles_to_be_deleted_id = updated_user_articles[:len(updated_user_articles) - MAX_PERMITTED_ARTICLES]
             user_articles_to_be_deleted = UserArticle.objects.filter(id__in=user_articles_to_be_deleted_id)
