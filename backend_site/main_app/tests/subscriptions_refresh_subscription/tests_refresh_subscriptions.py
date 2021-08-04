@@ -70,8 +70,13 @@ class RefreshSubscriptionsTest(APITestCase):
         url_parser.return_value = self.test_helper.false_subscription_with_other_articles
         resp = self.client.put('/main_app/subscriptions/1/').data
         self.assertEqual(resp['new_articles'], 1)
+        self.assertEqual(len(Article.objects.all()), 2)
         url_parser.return_value = self.test_helper.false_subscription_with_10_articles
         resp = self.client.put('/main_app/subscriptions/1/').data
         self.assertEqual(resp['new_articles'], 10)
+
+
+
+
 
 

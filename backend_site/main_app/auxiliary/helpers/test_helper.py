@@ -21,6 +21,28 @@ class TestUtils(TestCase):
                               {'title': 'Title09', 'link': 'false_link09', 'summary': 'false_summary09'},
                               {'title': 'Title10', 'link': 'false_link10', 'summary': 'false_summary10'},
                               ]}
+    false_subscription_with_10_other_articles = {'link': 'https://falseurl.com', 'title': "Mom",
+                                           'entries': [{'title': 'Title11', 'link': 'false_link11',
+                                                        'summary': 'false_summary11'},
+                                                       {'title': 'Title12', 'link': 'false_link12',
+                                                        'summary': 'false_summary12'},
+                                                       {'title': 'Title13', 'link': 'false_link13',
+                                                        'summary': 'false_summary13'},
+                                                       {'title': 'Title14', 'link': 'false_link14',
+                                                        'summary': 'false_summary14'},
+                                                       {'title': 'Title15', 'link': 'false_link15',
+                                                        'summary': 'false_summary15'},
+                                                       {'title': 'Title16', 'link': 'false_link16',
+                                                        'summary': 'false_summary16'},
+                                                       {'title': 'Title17', 'link': 'false_link17',
+                                                        'summary': 'false_summary17'},
+                                                       {'title': 'Title18', 'link': 'false_link18',
+                                                        'summary': 'false_summary18'},
+                                                       {'title': 'Title19', 'link': 'false_link19',
+                                                        'summary': 'false_summary19'},
+                                                       {'title': 'Title20', 'link': 'false_link20',
+                                                        'summary': 'false_summary20'},
+                                                       ]}
 
     def create_and_login_user(self, username, client):
         data = {"username": username, "password": 'password123', "email": 'newuser@gmail.com'}

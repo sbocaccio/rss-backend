@@ -26,16 +26,17 @@ class SubscriptionFeedHelper():
         return parse_data
 
     def _assert_can_parse(self, data):
-
         feed_parse = feedparser.parse(data['link'])
         if (not 'status' in feed_parse or feed_parse['status'] != HTTPStatus.OK or not 'title' in feed_parse.feed):
             raise AttributeError('Impossible to parse URL.')
         return feed_parse
 
     def update_subscription(self, subscription, user):
-        subscription_link = subscription.link
+        subscription_link = {
+            "link": subscription.link
+        }
         parsed_data = self._parse_data(subscription_link)
-        articles = self._update_articles_for_subscription(subscription, parsed_data, user)
+        articles , new_articles_cant = self._update_articles_for_subscription(subscription, parsed_data, user)
         if articles:
             subscription.subscription_articles.add(*articles)
             subscription.save()
@@ -44,7 +45,7 @@ class SubscriptionFeedHelper():
         user_article_helper.remove_old_user_articles_from_subscription_and_user(subscription, user)
         updated_articles = UserArticle.objects.filter(article__in=list(subscription.subscription_articles.all()),
                                    user=user).order_by('-article__created_at')
-        return updated_articles,len(articles)
+        return updated_articles,new_articles_cant
 
 
 
@@ -53,8 +54,8 @@ class SubscriptionFeedHelper():
         if ('entries' in parsed_data):
             user_article_helper = UserArticleHelper()
             newest_articles = parsed_data['entries'][0:(min(10, len(parsed_data['entries'])))]
-            articles = user_article_helper.create_user_articles(newest_articles,subscription,user)
-            return articles
+            articles , new_articles_cant = user_article_helper.create_user_articles(newest_articles,subscription,user)
+            return articles,new_articles_cant
 
 
 
@@ -100,5 +101,5 @@ class SubscriptionFeedHelper():
         if ('entries' in parsed_data):
             user_article_helper = UserArticleHelper()
             last_articles = parsed_data['entries'][0:(min(10, len(parsed_data['entries'])))]
-            articles = user_article_helper.create_user_articles(last_articles, subscription, user)
+            articles, new_articles_cant  = user_article_helper.create_user_articles(last_articles, subscription, user)
             return articles

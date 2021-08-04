@@ -18,7 +18,7 @@ class UserArticleHelper():
         self.add_image_to_article(article, article_model)
 
         article_model.save()
-        return article_model
+        return article_model,created
 
     def add_image_to_article(self, article, article_model):
         image = ''
@@ -47,15 +47,18 @@ class UserArticleHelper():
     def create_user_articles(self, articles, subscription, user):
         articles.reverse()  # Newer feeds must be the latest created.
         created_articles = []
+        articles_created = 0
         for article in articles:
-            article = self.get_or_create_article(article, subscription)
+            article,created = self.get_or_create_article(article, subscription)
+            if(created):
+                articles_created+=1
             created_articles.append(article)
             self.get_or_create_user_article(article, user)
-        return created_articles
+        return created_articles,articles_created
 
     def delete_all_user_articles_from_subscription(self, user,articles_of_subscription):
-        no_more_readable_user_article_from_user = UserArticle.objects.not_more_readable_user_articles_from_user_and_subscription(user,articles_of_subscription)
-        self.delete_user_articles_from_subscription(no_more_readable_user_article_from_user)
+        no_more_readable_user_article = UserArticle.objects.not_more_readable_user_articles_from_user_and_subscription(user,articles_of_subscription)
+        self.delete_user_articles_from_subscription(no_more_readable_user_article)
 
     def delete_user_articles_from_subscription(self, user_articles_to_delete):
         '''
@@ -82,5 +85,5 @@ class UserArticleHelper():
         updated_user_articles = UserArticle.objects.all_user_articles_sorted_by_order_from_user_and_subscription(user,subscription)
         if (len(updated_user_articles) > MAX_PERMITTED_ARTICLES):
             user_articles_to_be_deleted_id = updated_user_articles[:len(updated_user_articles) - MAX_PERMITTED_ARTICLES]
-            user_articles_to_be_deleted = UserArticle.objects.filter(article__in=user_articles_to_be_deleted_id)
+            user_articles_to_be_deleted = UserArticle.objects.filter(id__in=user_articles_to_be_deleted_id)
             self.delete_user_articles_from_subscription(user_articles_to_be_deleted)
