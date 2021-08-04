@@ -18,7 +18,7 @@ from ..serializers.user_article_serializer import UserArticleSerializers
 class SubscriptionFeedAPI(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = CreateFeedSerializers
-    lookup_field = 'id'
+    lookup_field = 'pk'
 
     def get_queryset(self):
         user = self.request.user
@@ -26,7 +26,7 @@ class SubscriptionFeedAPI(viewsets.ModelViewSet):
         return user_subscriptions
 
     def destroy(self, *args, **kwargs):
-        subscription = self.check_user_is_subscribed_to_subscription(kwargs['id'], self.request.user)
+        subscription = self.check_user_is_subscribed_to_subscription(kwargs['pk'], self.request.user)
         articles_of_subscription = list(subscription.subscription_articles.all())
         self.delete_user_articles_from_user(self.request, articles_of_subscription)
         subscription.users_subscribed.remove(self.request.user)
@@ -48,7 +48,7 @@ class SubscriptionFeedAPI(viewsets.ModelViewSet):
         return subscription
 
     def refresh(self, *args, **kwargs):
-        subscription = self.check_user_is_subscribed_to_subscription(kwargs['id'], self.request.user)
+        subscription = self.check_user_is_subscribed_to_subscription(kwargs['pk'], self.request.user)
         subscription_helper = SubscriptionFeedHelper()
         user_articles,number_of_new_articles = subscription_helper.update_subscription(subscription, self.request.user)
         data=UserArticleSerializers(instance= user_articles, many= True)

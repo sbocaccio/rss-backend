@@ -21,7 +21,7 @@ class ArticleAPI(ListAPIView):
     def get_queryset(self):
 
         user = self.request.user
-        subscription_id = self.kwargs['id']
+        subscription_id = self.kwargs['pk']
         try:
             SubscriptionFeeds.objects.get(id=subscription_id, users_subscribed=user)
         except:
