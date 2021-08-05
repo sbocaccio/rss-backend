@@ -28,3 +28,4 @@ class ArticleAPI(ListAPIView):
             raise NotSubscribedException()
         user_articles = UserArticle.objects.all_user_articles_from_user_and_subscription_sorted_descending_date_order(user,subscription)
         return user_articles
+

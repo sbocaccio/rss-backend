@@ -15,6 +15,7 @@ subscription_feed_delete_and_refresh = SubscriptionFeedAPI.as_view({
     'delete': 'destroy',
     'put': 'refresh',
 })
+
 urlpatterns = format_suffix_patterns([
     path('register/', RegisterApi.as_view(), name=''),
     path('login/', LoginAPIView.as_view(), name=''),
