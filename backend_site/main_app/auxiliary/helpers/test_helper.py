@@ -56,4 +56,3 @@ class TestUtils(TestCase):
         resp = client.post("/main_app/feed/", data)
         return resp
 
-

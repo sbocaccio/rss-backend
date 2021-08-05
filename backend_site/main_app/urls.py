@@ -15,12 +15,18 @@ subscription_feed_delete_and_refresh = SubscriptionFeedAPI.as_view({
     'delete': 'destroy',
     'put': 'refresh',
 })
-
+user_articles = ArticleAPI.as_view({
+    'get': 'list',
+})
+user_article_update_read = ArticleAPI.as_view({
+    'put': 'update',
+})
 urlpatterns = format_suffix_patterns([
     path('register/', RegisterApi.as_view(), name=''),
     path('login/', LoginAPIView.as_view(), name=''),
     path('subscriptions/<int:pk>/', subscription_feed_delete_and_refresh, name='delete_and_refresh'),
-    path('subscriptions/<int:pk>/articles/', ArticleAPI.as_view(), name='articles'),
+    path('subscriptions/<int:pk>/articles/', user_articles, name='articles'),
+    path('articles/<int:pk>/<slug:state>/',user_article_update_read,name='update_read')
 ])
 
 urlpatterns += router.urls
