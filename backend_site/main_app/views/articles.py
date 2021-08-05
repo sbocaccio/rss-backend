@@ -26,5 +26,5 @@ class ArticleAPI(ListAPIView):
             subscription = SubscriptionFeeds.objects.get(id=subscription_id, users_subscribed=user)
         except:
             raise NotSubscribedException()
-        user_articles = UserArticle.objects.all_user_articles_from_user_and_subscription_sorted_descending_date_order(user,subscription)
+        user_articles = UserArticle.objects.all_user_articles_from_user_and_subscription_sorted_in_descending_date_order(user,subscription)
         return user_articles
