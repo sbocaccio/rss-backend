@@ -4,15 +4,10 @@ from django.contrib.auth.models import User
 from .models.article import Article
 from .models.subscription_feed_model import SubscriptionFeeds
 from .models.user_article import UserArticle
+from .auxiliary.helpers.admin_helper import customTitledFilter
 
 
-def customTitledFilter(title):
-    class Wrapper(admin.FieldListFilter):
-        def __new__(cls, *args, **kwargs):
-            instance = admin.FieldListFilter.create(*args, **kwargs)
-            instance.title = title
-            return instance
-    return Wrapper
+
 
 @admin.register(Article)
 class ArticleAdmin(admin.ModelAdmin):
@@ -24,8 +19,6 @@ class ArticleAdmin(admin.ModelAdmin):
     def subscriptions_its_belongs(self, article):
         return ", ".join(
             [str(subscription) for subscription in article.subscriptions_feed.all().values_list('title', flat=True)])
-
-
 
 
 @admin.register(SubscriptionFeeds)
@@ -40,7 +33,7 @@ class SubscriptionFeedsAdmin(admin.ModelAdmin):
 
 @admin.register(UserArticle)
 class UserArticleAdmin(admin.ModelAdmin):
-    list_display = ("user", "article_title")
+    list_display = ("user", "article")
     search_fields = ["user__username", "article__title"]
     list_filter = ["user"]
 
