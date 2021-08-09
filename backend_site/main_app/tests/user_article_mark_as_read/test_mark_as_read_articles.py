@@ -52,7 +52,7 @@ class UserArticleReadStateTest(APITestCase):
         url_parser.return_value = self.test_helper.false_subscription
         self.test_helper.submit_post_creating_user('newuser', {"link": self.rss_url}, self.client).data['id']
         self.test_helper.create_and_login_user('newuser2', self.client)
-        
+
         user_article = UserArticle.objects.first()
         self.assertEqual(user_article.read, False)
         data= {"read": 'true'}
