@@ -50,14 +50,18 @@ class Command(BaseCommand):
     def getUser(self,usernames):
         users = []
         print(colored('Starting to retrieve users from database', 'yellow'))
+        print(usernames)
         for user in usernames:
+            print(user)
+            usuario = User.objects.get(username=user)
+            '''
             try:
-                print(manolo)
                 user = User.objects.get(username=user)
                 print(user)
                 users.append(user)
             except:
                 print(colored('ERROR', 'red'), 'user ', user, ' is not created so is going to be dismissed in adding it to the subscriptions')
+            '''
 
         print(colored('Retrieving users completed', 'yellow'))
         return users
