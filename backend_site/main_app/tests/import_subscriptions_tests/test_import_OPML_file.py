@@ -1,27 +1,23 @@
-from rest_framework.test import APITestCase, APIClient
-import subprocess
 from django.contrib.auth.models import User
+from rest_framework.test import APITestCase, APIClient
+from django.core.management import BaseCommand, CommandError
+from io import StringIO
+from django.core.management import call_command
+from ...models.subscription_feed_model import SubscriptionFeeds
+from mock import patch
 
 class ImportOPMLFileSubscription(APITestCase):
 
-    def test_command_needs_file_argument_to_run (self):
-        out,error= subprocess.Popen('python3 manage.py import_subscriptions',shell=True,
-                                          stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()
-        error = error.splitlines()
-        error_msg_expected = 'error: the following arguments are required: file'
-        error_found = False
-        for line in error:
-            if (error_msg_expected in str(line)):
-                error_found = True
-        self.assertEqual(error_found, True)
+    @patch.object(SubscriptionFeedHelper, 'parse_data')
+    def test_command_create_subscription_for_existing_user_and_user_is_in(self):
+        user = User.objects.create_user(username='username', password='password', email='email@email.com')
+        call_command('import_subscriptions' ,'main_app/tests/import_subscriptions_tests/one_feed.opml', 'username')
+        subscription =SubscriptionFeeds.objects.get()
+        user_subscribed = list(subscription.users_subscribed)
+        self.assertNotEqual(SubscriptionFeeds.objects.first(), None)
+        self.assertEqual(user in user_subscribed, True)
 
-    def test_command_create_subscription_for_existing_user(self):
-        user = User.objects.create_user(username= 'username' ,password='password',email='email@email.com')
-        user.save()
-        out = subprocess.check_output('python3 manage.py import_subscriptions main_app/tests/import_subscriptions_tests/feeds.opml username', shell=True,
-                                     )
-        out = out.splitlines()
-        print(out)
+
 
 
 

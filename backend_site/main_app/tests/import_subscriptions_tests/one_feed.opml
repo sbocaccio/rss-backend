@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<opml version="1.0">
+	<head>
+		<title>My Feeds</title>
+	</head>
+	<body>
+		<outline text="24 ways" htmlUrl="http://24ways.org/" type="rss" xmlUrl="https://www.clarin.com/rss/deportes/boxeo/"/>
+		
+	</body>
+</opml> 

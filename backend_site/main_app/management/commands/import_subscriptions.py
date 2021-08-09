@@ -1,16 +1,19 @@
+import argparse
 import sys
-from django.core.management.base import BaseCommand, CommandError
-from xml.etree import ElementTree
-from ...auxiliary.helpers.feed_helper import SubscriptionFeedHelper
 from django.contrib.auth.models import User
+from django.core.management.base import BaseCommand, CommandError
 from rest_framework.serializers import ValidationError
 from termcolor import colored
-import argparse
+from xml.etree import ElementTree
+
+from ...auxiliary.helpers.feed_helper import SubscriptionFeedHelper
+
+
 class Command(BaseCommand):
     help = 'Parse OPML file with subscriptions and add users to them.'
     def add_arguments(self, parser):
         parser.add_argument('file', type=str)
-        parser.add_argument('users', nargs='+', type=str)
+        parser.add_argument('users', nargs='+', type=str, default = [])
 
     def handle(self, *args, **options):
         users = self.getUser(options['users'])
@@ -18,22 +21,19 @@ class Command(BaseCommand):
         feeds = self.OPML_parse(file)
         subscription_helper = SubscriptionFeedHelper()
         for feed in feeds:
+            self.stdout.write('Adding users to subscription %s' % feed)
             for user in users:
-                print(colored('START', 'green'), 'adding subscription to feed', feed)
-                try :
+                try:
                     self.add_user_to_subscription(feed, subscription_helper, user)
                 except ValidationError as error:
-                    print(colored('ERROR:','red'),error.detail['message'])
-                except ValueError as error:
-                    print(colored('ERROR:','red'),error)
+                    self.stdout.write(self.style.ERROR('ERROR: %s' %error.detail['message']))
                 except Exception as error:
-                    print(colored('ERROR:', 'red'), error)
-
+                    self.stdout.write(self.style.ERROR('ERROR: %s' %error))
                 else:
-                    print(colored('SUCCESS:','green'),'Successfully added user:', user, 'to subscription', feed)
+                    self.stdout.write(self.style.SUCCESS('Successfully added user "%s" to subscription ' %user))
 
     def add_user_to_subscription(self, feed, subscription_helper, user):
-        print(colored('START', 'green'), 'adding', user.username, 'to subscription', feed)
+        self.stdout.write('Adding %s to subscription' %user.username)
         data = {'link': feed}
         subscription_helper.create_feed(data, user)
 
@@ -47,22 +47,15 @@ class Command(BaseCommand):
                 urls.append(url)
         return urls
 
-    def getUser(self,usernames):
+    def getUser(self, usernames):
         users = []
-        print(colored('Starting to retrieve users from database', 'yellow'))
-        print(usernames)
+        self.stdout.write('Starting to retrieve users from database')
         for user in usernames:
-            print(user)
-            usuario = User.objects.get(username=user)
-            '''
             try:
                 user = User.objects.get(username=user)
-                print(user)
                 users.append(user)
             except:
-                print(colored('ERROR', 'red'), 'user ', user, ' is not created so is going to be dismissed in adding it to the subscriptions')
-            '''
+                self.stdout.write(self.style.ERROR('ERROR: %s is not registered so is not going to be add to any subscription' %user))
 
-        print(colored('Retrieving users completed', 'yellow'))
+        self.stdout.write('Retrieving users completed')
         return users
-
