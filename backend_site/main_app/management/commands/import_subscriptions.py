@@ -6,14 +6,16 @@ from rest_framework.serializers import ValidationError
 from termcolor import colored
 from xml.etree import ElementTree
 
+from ...auxiliary.exceptions.no_users_recieved_exception import NotUserReceived
 from ...auxiliary.helpers.feed_helper import SubscriptionFeedHelper
 
 
 class Command(BaseCommand):
     help = 'Parse OPML file with subscriptions and add users to them.'
+
     def add_arguments(self, parser):
         parser.add_argument('file', type=str)
-        parser.add_argument('users', nargs='+', type=str, default = [])
+        parser.add_argument('users', nargs='*', type=str, default=[])
 
     def handle(self, *args, **options):
         users = self.getUser(options['users'])
@@ -26,14 +28,14 @@ class Command(BaseCommand):
                 try:
                     self.add_user_to_subscription(feed, subscription_helper, user)
                 except ValidationError as error:
-                    self.stdout.write(self.style.ERROR('ERROR: %s' %error.detail['message']))
+                    self.stdout.write(self.style.ERROR('ERROR: %s' % error.detail['message']))
                 except Exception as error:
-                    self.stdout.write(self.style.ERROR('ERROR: %s' %error))
+                    self.stdout.write(self.style.ERROR('ERROR: %s' % error))
                 else:
-                    self.stdout.write(self.style.SUCCESS('Successfully added user "%s" to subscription ' %user))
+                    self.stdout.write(self.style.SUCCESS('Successfully added user "%s" to subscription ' % user))
 
     def add_user_to_subscription(self, feed, subscription_helper, user):
-        self.stdout.write('Adding %s to subscription' %user.username)
+        self.stdout.write('Adding %s to subscription' % user.username)
         data = {'link': feed}
         subscription_helper.create_feed(data, user)
 
@@ -55,7 +57,10 @@ class Command(BaseCommand):
                 user = User.objects.get(username=user)
                 users.append(user)
             except:
-                self.stdout.write(self.style.ERROR('ERROR: %s is not registered so is not going to be add to any subscription' %user))
+                self.stdout.write(self.style.ERROR(
+                    'ERROR: %s is not registered so is not going to be add to any subscription' % user))
 
+        if (not users):
+            raise NotUserReceived()
         self.stdout.write('Retrieving users completed')
         return users
