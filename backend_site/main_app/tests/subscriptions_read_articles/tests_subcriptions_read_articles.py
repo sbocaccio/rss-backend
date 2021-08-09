@@ -20,18 +20,14 @@ class DisplayArticlesTest(APITestCase):
 
     @patch.object(SubscriptionFeedHelper, 'parse_data')
     def test_create_a_post_generates_an_article(self, url_parser):
-        mock_value = {'link': 'https://falseurl.com', 'title': "Mom",
-                      'entries': [{'title': 'Title', 'link': 'falselink', 'summary': 'false_summary'}]}
-        url_parser.return_value = mock_value
+        url_parser.return_value = self.test_helper.false_subscription
         self.test_helper.submit_post_creating_user('newuser', {"link": self.rss_url}, self.client)
         self.assertEqual(len(Article.objects.all()), 1)
         self.assertEqual(len(UserArticle.objects.all()), 1)
 
     @patch.object(SubscriptionFeedHelper, 'parse_data')
     def test_create_a_post_with_one_article_creates_two_user_articles_and_only_one_article(self, url_parser):
-        mock_value = {'link': 'https://falseurl.com', 'title': "Mom",
-                      'entries': [{'title': 'Title', 'link': 'falselink', 'summary': 'false_summary'}]}
-        url_parser.return_value = mock_value
+        url_parser.return_value = self.test_helper.false_subscription
         self.test_helper.submit_post_creating_user('newuser', {"link": self.rss_url}, self.client)
         self.test_helper.submit_post_creating_user('newuser2', {"link": self.rss_url}, self.client)
         self.assertEqual(len(Article.objects.all()), 1)
@@ -39,9 +35,7 @@ class DisplayArticlesTest(APITestCase):
 
     @patch.object(SubscriptionFeedHelper, 'parse_data')
     def test_user_article_and_article_have_correct_data_when_they_are_created(self, url_parser):
-        mock_value = {'link': 'https://falseurl.com', 'title': "Mom",
-                      'entries': [{'title': 'Title', 'link': 'false_link', 'summary': 'false_summary'}]}
-        url_parser.return_value = mock_value
+        url_parser.return_value = self.test_helper.false_subscription
         self.test_helper.submit_post_creating_user('newuser', {"link": self.rss_url}, self.client)
         user1 = User.objects.get(username='newuser')
         subscription_feed = SubscriptionFeeds.objects.get(id=1)
@@ -58,9 +52,7 @@ class DisplayArticlesTest(APITestCase):
 
     @patch.object(SubscriptionFeedHelper, 'parse_data')
     def test_articles_can_be_retrieved_passing_subscription_as_parameter(self, url_parser):
-        mock_value = {'link': 'https://falseurl.com', 'title': "Mom",
-                      'entries': [{'title': 'Title', 'link': 'false_link', 'summary': 'false_summary'}]}
-        url_parser.return_value = mock_value
+        url_parser.return_value = self.test_helper.false_subscription
         self.test_helper.submit_post_creating_user('newuser', {"link": self.rss_url}, self.client)
         resp = self.client.get('/main_app/subscriptions/1/articles/')
         resp_articles = resp.json()
@@ -72,9 +64,7 @@ class DisplayArticlesTest(APITestCase):
 
     @patch.object(SubscriptionFeedHelper, 'parse_data')
     def test_user_can_not_receive_articles_of_a_subscription_is_not_subscribed(self, url_parser):
-        mock_value = {'link': 'https://falseurl.com', 'title': "Mom",
-                      'entries': [{'title': 'Title', 'link': 'false_link', 'summary': 'false_summary'}]}
-        url_parser.return_value = mock_value
+        url_parser.return_value = self.test_helper.false_subscription
         self.test_helper.submit_post_creating_user('newuser', {"link": self.rss_url}, self.client)
         resp = self.client.get('/main_app/subscriptions/2/articles/')
         self.assertEqual(resp.status_code, HTTPStatus.BAD_REQUEST)

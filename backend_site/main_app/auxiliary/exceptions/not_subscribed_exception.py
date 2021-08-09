@@ -4,3 +4,4 @@ class NotSubscribedException(APIException):
     status_code = 400
     default_detail = 'You are not subscribed to that feed. Subscribe first.'
     default_code = 'service_denied'
+
