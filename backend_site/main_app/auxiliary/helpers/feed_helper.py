@@ -51,7 +51,7 @@ class SubscriptionFeedHelper():
             articles, new_articles_cant = user_article_helper.create_user_articles(newest_articles, subscription, user)
             return articles, new_articles_cant
 
-    def _create_feed(self, validated_data, user):
+    def create_feed(self, validated_data, user):
         parsed_data = self._parse_data(validated_data)
         subscription = self._get_or_create_subscription_model(parsed_data, user)[0]
         subscription.users_subscribed.add(user)

@@ -7,7 +7,7 @@ from rest_framework.serializers import ValidationError
 from termcolor import colored
 
 class Command(BaseCommand):
-    help = 'Parse OPML file subscription and create subscription then add the users to them.'
+    help = 'Parse OPML file with subscriptions and add users to them.'
 
     def add_arguments(self, parser):
         parser.add_argument('file', type=str)
@@ -21,10 +21,7 @@ class Command(BaseCommand):
         for feed in feeds:
             for user in users:
                 try :
-                    print(colored('START','green'), 'adding', user,'to subscription', feed)
-                    data = {'link': feed}
-                    usuario = User.objects.get(username = user)
-                    subscription_helper._create_feed(data,usuario)
+                    self.add_user_to_subscription(feed, subscription_helper, user)
                 except ValidationError as error:
                     print(colored('ERROR:','red'),error.detail['message'])
                 except ValueError as error:
@@ -34,6 +31,12 @@ class Command(BaseCommand):
 
                 else:
                     print(colored('SUCCESS:','green'),'Successfully added user:', user, 'to subscription', feed)
+
+    def add_user_to_subscription(self, feed, subscription_helper, user):
+        print(colored('START', 'green'), 'adding', user, 'to subscription', feed)
+        data = {'link': feed}
+        usuario = User.objects.get(username=user)
+        subscription_helper.create_feed(data, usuario)
 
     def OPML_parse(self, file):
         urls = []

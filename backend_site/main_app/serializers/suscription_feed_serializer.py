@@ -21,6 +21,6 @@ class CreateFeedSerializers(serializers.ModelSerializer):
     def create(self, validated_data):
         subscription_helper = SubscriptionFeedHelper()
         user = self.context['request'].user
-        feed = subscription_helper._create_feed(validated_data,user)
+        feed = subscription_helper.create_feed(validated_data,user)
         return feed
 
