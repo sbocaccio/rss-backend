@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<opml version="1.0">
+	<head>
+		<title>My Feeds</title>
+	</head>
+	<body>
+		<outline text="24 ways" htmlUrl="http://24ways.org/" type="rss" xmlUrl="https://www.clarin.com/rss/deportes/boxeo/"/>
+		<outline text="2ality – JavaScript and more" htmlUrl="http://www.2ality.com/" type="rss" xmlUrl="http://feeds.feedburner.com/2ality"/>
+		<outline text="456 Berea Street" htmlUrl="http://www.456bereastreet.com/" type="rss" xmlUrl="http://feeds.feedburner.com/456bereastreet"/>
+
+		
+	</body>
+</opml> 
