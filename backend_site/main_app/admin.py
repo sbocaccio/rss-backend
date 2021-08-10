@@ -27,15 +27,24 @@ class ArticleAdmin(admin.ModelAdmin):
 
 
 
+class ClassInline(admin.TabularInline):
+    model = ArticleAdmin
+
 
 @admin.register(SubscriptionFeeds)
 class SubscriptionFeedsAdmin(admin.ModelAdmin):
     list_display = ("link", "title", 'users__subscribed')
     search_fields = ["link", "title", 'users_subscribed__username']
     list_filter = ["title", 'users_subscribed']
+    inlines = [
+        ClassInline,
+    ]
+
 
     def users__subscribed(self, subscription):
         return ", ".join([str(user) for user in subscription.users_subscribed.all()])
+
+
 
 
 @admin.register(UserArticle)
@@ -43,6 +52,8 @@ class UserArticleAdmin(admin.ModelAdmin):
     list_display = ("user", "article_title")
     search_fields = ["user__username", "article__title"]
     list_filter = ["user"]
+    fields = ['foreign_key__related_id']
+
 
     def article_title(self, user_article):
         return user_article.article.title
