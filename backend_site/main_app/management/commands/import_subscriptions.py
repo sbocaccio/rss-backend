@@ -9,21 +9,22 @@ from xml.etree import ElementTree
 from ...auxiliary.exceptions.no_users_recieved_exception import NotUserReceived
 from ...auxiliary.helpers.feed_helper import SubscriptionFeedHelper
 
-
 class Command(BaseCommand):
     help = 'Parse OPML file with subscriptions and add users to them.'
 
     def add_arguments(self, parser):
         parser.add_argument('file', type=str)
         parser.add_argument('users', nargs='*', type=str, default=[])
+        parser.add_argument( '--all', help='Add all users to the subscriptions.',action='store_const', const=True)
+
 
     def handle(self, *args, **options):
-        users = self.getUser(options['users'])
+        users = self.getUser(options['users'],options['all'])
         file = options['file']
         feeds = self.OPML_parse(file)
         subscription_helper = SubscriptionFeedHelper()
         for feed in feeds:
-            self.stdout.write('Adding users to subscription %s' % feed)
+            self.stdout.write(self.style.WARNING('Adding users to subscription %s' % feed))
             for user in users:
                 try:
                     self.add_user_to_subscription(feed, subscription_helper, user)
@@ -49,18 +50,26 @@ class Command(BaseCommand):
                 urls.append(url)
         return urls
 
-    def getUser(self, usernames):
-        users = []
+    def getUser(self, usernames,all_user_activated):
         self.stdout.write('Starting to retrieve users from database')
-        for user in usernames:
-            try:
-                user = User.objects.get(username=user)
-                users.append(user)
-            except:
-                self.stdout.write(self.style.ERROR(
-                    'ERROR: %s is not registered so is not going to be add to any subscription' % user))
+        users = []
+        if(all_user_activated):
+            users = list(User.objects.all())
+        else:
+            users = self._get_valid_users(usernames)
 
         if (not users):
             raise NotUserReceived()
         self.stdout.write('Retrieving users completed')
         return users
+
+    def _get_valid_users(self, usernames):
+        valid_users= []
+        for user in usernames:
+            try:
+                user = User.objects.get(username=user)
+                valid_users.append(user)
+            except:
+                self.stdout.write(self.style.ERROR(
+                    'ERROR: %s is not registered so is not going to be add to any subscription' % user))
+        return valid_users
