@@ -72,7 +72,7 @@ class ImportOPMLFileSubscription(APITestCase):
         subscription = SubscriptionFeeds.objects.get()
         user_subscribed = list(subscription.users_subscribed.all())
         out = out.getvalue()
-        assert ((user1 in user_subscribed) and (user2 in user_subscribed) and (user2 in user_subscribed))
+        assert ((user1 in user_subscribed) and (user2 in user_subscribed) and (user3 in user_subscribed))
         assert ('Successfully added user "username1" to subscription' in out)
         assert ('Successfully added user "username2" to subscription' in out)
         assert ('Successfully added user "username3" to subscription' in out)
@@ -127,16 +127,23 @@ class ImportOPMLFileSubscription(APITestCase):
         user3 = User.objects.create_user(username='username3', password='password', email='email3@email.com')
         call_command('import_subscriptions', 'main_app/tests/import_subscriptions_tests/one_feed.opml','--all',
                      stdout=out)
+        subscription = SubscriptionFeeds.objects.first()
+        user_subscribed = list(subscription.users_subscribed.all())
+        out = out.getvalue()
+        assert ((user1 in user_subscribed) and (user2 in user_subscribed) and (user3 in user_subscribed))
+        assert ('Successfully added user "username1" to subscription' in out)
+        assert ('Successfully added user "username2" to subscription' in out)
+        assert ('Successfully added user "username3" to subscription' in out)
 
+    @patch.object(SubscriptionFeedHelper, 'parse_data')
+    def test_not_all_users_are_subscribed_after_using_command(self, url_parser):
+        url_parser.return_value = self.test_helper.false_subscription
+        out = StringIO()
+        user1 = User.objects.create_user(username='username1', password='password', email='email1@email.com')
+        user2 = User.objects.create_user(username='username2', password='password', email='email2@email.com')
+        call_command('import_subscriptions', 'main_app/tests/import_subscriptions_tests/one_feed.opml','username1',
+                     stdout=out)
+        subscription = SubscriptionFeeds.objects.first()
+        user_subscribed = subscription.users_subscribed.all()
+        assert ((user1 in user_subscribed) and not (user2 in user_subscribed))
 
-
-    '''
-        def test_subscription_is_not_created_when_parsing_fails(self):
-            user = User.objects.create_user(username='username', password='password', email='email@email.com')
-            out = StringIO()
-            call_command('import_subscriptions', 'main_app/tests/import_subscriptions_tests/one_feed.opml', ['not_valid_username','username'],
-                         stdout=out)
-            out = out.getvalue()
-            self.assertEqual(len(SubscriptionFeeds.objects.all()),0)
-            assert ('Successfully added user "username" to subscription' in out)
-    '''

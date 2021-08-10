@@ -53,3 +53,16 @@ When you create or modify a model run inside *backend_site* directory where you 
     python3 ./manage.py makemigrations
     python3 ./manage.py migrate
     pip freeze > requirements.txt
+
+## Custom commands
+
+### import_subscriptions
+Subscribed users to the subscriptions in the argument's file.
+
+Usage: 
+    
+    python3 manage.py import_subscriptions path/to/opml/file user1 user2
+
+How to subscribe all users:
+
+    python3 manage.py import_subscriptions --all

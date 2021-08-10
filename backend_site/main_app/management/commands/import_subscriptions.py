@@ -23,15 +23,16 @@ class Command(BaseCommand):
         file = options['file']
         feeds = self.OPML_parse(file)
         subscription_helper = SubscriptionFeedHelper()
+        self.create_subscriptions(feeds, subscription_helper, users)
+
+    def create_subscriptions(self, feeds, subscription_helper, users):
         for feed in feeds:
-            self.stdout.write(self.style.WARNING('Adding users to subscription %s' % feed))
+            self.stdout.write('Adding users to subscription %s' % feed)
             for user in users:
                 try:
                     self.add_user_to_subscription(feed, subscription_helper, user)
                 except ValidationError as error:
                     self.stdout.write(self.style.ERROR('ERROR: %s' % error.detail['message']))
-                except Exception as error:
-                    self.stdout.write(self.style.ERROR('ERROR: %s' % error))
                 else:
                     self.stdout.write(self.style.SUCCESS('Successfully added user "%s" to subscription ' % user))
 
@@ -57,7 +58,6 @@ class Command(BaseCommand):
             users = list(User.objects.all())
         else:
             users = self._get_valid_users(usernames)
-
         if (not users):
             raise NotUserReceived()
         self.stdout.write('Retrieving users completed')
@@ -69,7 +69,7 @@ class Command(BaseCommand):
             try:
                 user = User.objects.get(username=user)
                 valid_users.append(user)
-            except:
+            except User.DoesNotExist:
                 self.stdout.write(self.style.ERROR(
                     'ERROR: %s is not registered so is not going to be add to any subscription' % user))
         return valid_users
