@@ -14,9 +14,9 @@ from ..serializers.user_article_serializer import UserArticleSerializers
 class ArticleAPI(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = UserArticleSerializers
+    http_method_names= ['get','put']
 
     def get_queryset(self):
-
         user = self.request.user
         subscription_id = self.kwargs['pk']
         try:
@@ -30,11 +30,8 @@ class ArticleAPI(viewsets.ModelViewSet):
     def update(self, *args, **kwargs):
         try:
             user_article = UserArticle.objects.get(pk=self.kwargs['pk'], user=self.request.user)
-            if (self.request.data['read'] == 'true'):
-                user_article.read = True
-            else:
-                user_article.read = False
+            user_article.read = self.request.data['read']
             user_article.save()
             return Response()
-        except:
+        except UserArticle.DoesNotExist:
             raise NotValidUserArticle()

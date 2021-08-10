@@ -27,8 +27,8 @@ class UserArticleReadStateTest(APITestCase):
         url_parser.return_value = self.test_helper.false_subscription
         subscription_id = self.test_helper.submit_post_creating_user('newuser', {"link": self.rss_url}, self.client).data['id']
         user_article_pk= self.client.get('/main_app/subscriptions/' + str(subscription_id) + '/articles/').data[0]['pk']
-        data = {"read": 'true'}
-        resp = self.client.put('/main_app/articles/' + str(user_article_pk) + '/',data)
+        data = {"read": True}
+        resp = self.client.put('/main_app/articles/' + str(user_article_pk) + '/',data, format="json")
         user_article = UserArticle.objects.first()
         self.assertEqual(resp.status_code, HTTPStatus.OK)
         self.assertEqual(user_article.read, True)
@@ -38,12 +38,12 @@ class UserArticleReadStateTest(APITestCase):
         url_parser.return_value = self.test_helper.false_subscription
         subscription_id = self.test_helper.submit_post_creating_user('newuser', {"link": self.rss_url}, self.client).data['id']
         user_article_pk = self.client.get('/main_app/subscriptions/' + str(subscription_id) + '/articles/').data[0]['pk']
-        data_true = {"read": 'true'}
-        data_false = {"read": 'false'}
-        resp = self.client.put('/main_app/articles/' + str(user_article_pk) + '/', data_true)
+        data_true = {"read": True}
+        data_false = {"read": False}
+        resp = self.client.put('/main_app/articles/' + str(user_article_pk) + '/', data_true,format="json")
         user_article = UserArticle.objects.first()
         self.assertEqual(user_article.read, True)
-        resp = self.client.put('/main_app/articles/' + str(user_article_pk) + '/', data_false)
+        resp = self.client.put('/main_app/articles/' + str(user_article_pk) + '/', data_false,format="json")
         user_article = UserArticle.objects.first()
         self.assertEqual(user_article.read, False)
 
@@ -55,8 +55,8 @@ class UserArticleReadStateTest(APITestCase):
 
         user_article = UserArticle.objects.first()
         self.assertEqual(user_article.read, False)
-        data= {"read": 'true'}
-        resp =self.client.put('/main_app/articles/' + str(user_article.pk)+ '/',data)
+        data= {"read": True}
+        resp =self.client.put('/main_app/articles/' + str(user_article.pk) + '/',data,format="json")
         self.assertEqual(resp.status_code,HTTPStatus.BAD_REQUEST)
         self.assertEqual(resp.data['detail'],'This article does not exist or is not part of any of your subscriptions')
         self.assertEqual(user_article.read, False)
