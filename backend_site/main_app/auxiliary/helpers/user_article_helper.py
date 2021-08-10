@@ -6,8 +6,7 @@ from django.db.models import Count
 
 from ...models.article import Article
 from ...models.user_article import UserArticle
-from ...models.subscription_feed_model import MAX_PERMITTED_ARTICLES
-
+from .constants import MAX_PERMITTED_ARTICLES
 class UserArticleHelper():
 
     def get_or_create_article(self, article, subscription):
@@ -54,8 +53,6 @@ class UserArticleHelper():
             self.get_or_create_user_article(article, user)
             if(created):
                 articles_created+=1
-
-
         return all_articles,articles_created
 
     def delete_all_user_articles_from_subscription(self, user,articles_of_subscription):
