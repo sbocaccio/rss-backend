@@ -43,7 +43,7 @@ class SubscriptionFeedHelper():
         user_article_helper = UserArticleHelper()
         user_article_helper.remove_old_user_articles_from_subscription_and_user(subscription, user)
 
-        updated_articles = UserArticle.objects.all_user_articles_from_user_and_subscription_sorted_descending_date_order(
+        updated_articles = UserArticle.objects.all_user_articles_from_user_and_subscription_sorted_in_descending_date_order(
             user, subscription)
         return updated_articles, new_articles_cant
 
