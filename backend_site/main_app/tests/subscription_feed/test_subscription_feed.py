@@ -37,7 +37,7 @@ class SubscriptionFeedTest(APITestCase):
         data = {"link": "https://kako.com"}
         resp = self.client.post("/main_app/feed/", data)
         self.assertEqual(resp.status_code, HTTPStatus.BAD_REQUEST)
-        self.assertEqual(resp.data['message'], 'Impossible to parse URL.')
+        self.assertEqual(resp.data['detail'], 'Impossible to parse URL.')
         self.assertEqual(len(SubscriptionFeeds.objects.all()), 0)
 
     @patch.object(SubscriptionFeedHelper, 'parse_data')

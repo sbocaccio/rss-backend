@@ -33,7 +33,7 @@ class ImportOPMLFileSubscription(APITestCase):
             out = StringIO()
             call_command('import_subscriptions', self.one_feed_file, stdout=out)
         except NotUserReceived as error:
-            self.assertEquals(error.args[0], "Error: Any valid user had been passed")
+            self.assertEquals(error.args[0], "Error: Any registered user had been passed. Try again passing registered users.")
 
     @patch.object(SubscriptionFeedHelper, 'parse_data')
     def test_command_create_subscription_for_existing_user(self, url_parser):
@@ -66,7 +66,7 @@ class ImportOPMLFileSubscription(APITestCase):
         except NotUserReceived as error:
             out = out.getvalue()
             assert ('ERROR: not_registered_user is not registered so is not going to be add to any subscription' in out)
-            self.assertEquals(error.args[0], "Error: Any valid user had been passed")
+            self.assertEquals(error.args[0], "Error: Any registered user had been passed. Try again passing registered users.")
             self.assertEqual(len(SubscriptionFeeds.objects.all()), 0)
             self.assertEqual(len(User.objects.all()), 0)
         else:

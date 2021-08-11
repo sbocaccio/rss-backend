@@ -8,6 +8,7 @@ from xml.etree import ElementTree
 from ...auxiliary.exceptions.no_users_recieved_exception import NotUserReceived
 from ...auxiliary.exceptions.user_already_subscribed_exception import UserAlreadySubscribedException
 from ...auxiliary.helpers.feed_helper import SubscriptionFeedHelper
+from ...auxiliary.exceptions.not_parseable_link_exception import NotParseableLinkExcepcion
 
 
 class Command(BaseCommand):
@@ -27,21 +28,29 @@ class Command(BaseCommand):
 
     def create_subscriptions(self, feeds, subscription_helper, users):
         for feed in feeds:
-            self.stdout.write('Adding users to subscription %s' % feed)
-            for user in users:
-                try:
-                    self.add_user_to_subscription(feed, subscription_helper, user)
-                except UserAlreadySubscribedException as error:
-                    self.stdout.write(self.style.ERROR('ERROR: %s' % error.detail))
-                except ValidationError as error:
-                    self.stdout.write(self.style.ERROR('ERROR: %s' % error.detail['message']))
-                else:
-                    self.stdout.write(self.style.SUCCESS('Successfully added user "%s" to subscription ' % user))
+            try:
+                feed_link = {'link':feed}
+                parsed_data = subscription_helper.parse_data(feed_link)
+                subscription = subscription_helper.create_feed(parsed_data)
+                self.add_users_to_subscription(subscription, parsed_data, subscription_helper, users)
+            except NotParseableLinkExcepcion as error:
+                self.stdout.write(self.style.ERROR('ERROR: %s' % error.detail))
 
-    def add_user_to_subscription(self, feed, subscription_helper, user):
+    def add_users_to_subscription(self, subscription, parsed_data, subscription_helper, users):
+        self.stdout.write('Adding users to subscription %s' % subscription.title)
+        for user in users:
+            try:
+                self.add_user_to_subscription(subscription, subscription_helper, user, parsed_data)
+            except UserAlreadySubscribedException as error:
+                self.stdout.write(self.style.ERROR('ERROR: %s' % error.detail))
+            except ValidationError as error:
+                self.stdout.write(self.style.ERROR('ERROR: %s' % error.detail['message']))
+            else:
+                self.stdout.write(self.style.SUCCESS('Successfully added user "%s" to subscription ' % user))
+
+    def add_user_to_subscription(self, subscription, subscription_helper, user,subscription_parsed_data):
         self.stdout.write('Adding %s to subscription' % user.username)
-        data = {'link': feed}
-        subscription_helper.create_feed(data, user)
+        subscription_helper.add_user_to_subscription(subscription, user,subscription_parsed_data)
 
     def OPML_parse(self, file):
         urls = []

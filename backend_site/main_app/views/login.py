@@ -21,5 +21,4 @@ class LoginAPIView(APIView):
             "message": 'You Succesfully loged in',
             'refresh': str(refresh_token),
             'access': str(refresh_token.access_token),
-
         })
