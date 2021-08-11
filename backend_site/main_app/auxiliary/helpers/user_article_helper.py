@@ -1,16 +1,11 @@
 import os
 import urllib.request
-
 from django.core.files import File
 from django.db.models import Count
-
 from ...models.article import Article
 from ...models.user_article import UserArticle
-<<<<<<< HEAD
-from ...models.subscription_feed_model import MAX_PERMITTED_ARTICLES
-=======
 from .constants import MAX_PERMITTED_ARTICLES
->>>>>>> 6-como-un-usuario-quiero-marcar-como-leido-no-leido-un-articulo
+
 
 class UserArticleHelper():
 
@@ -58,23 +53,12 @@ class UserArticleHelper():
             self.get_or_create_user_article(article, user)
             if(created):
                 articles_created+=1
-<<<<<<< HEAD
-
-
         return all_articles,articles_created
 
     def delete_all_user_articles_from_subscription(self, user,articles_of_subscription):
         no_more_readable_user_article = UserArticle.objects.not_more_readable_user_articles_from_user_and_subscription(user,articles_of_subscription)
         self.delete_user_articles_from_subscription(no_more_readable_user_article)
 
-=======
-        return all_articles,articles_created
-
-    def delete_all_user_articles_from_subscription(self, user,articles_of_subscription):
-        no_more_readable_user_article = UserArticle.objects.not_more_readable_user_articles_from_user_and_subscription(user,articles_of_subscription)
-        self.delete_user_articles_from_subscription(no_more_readable_user_article)
-
->>>>>>> 6-como-un-usuario-quiero-marcar-como-leido-no-leido-un-articulo
     def delete_user_articles_from_subscription(self, user_articles_to_delete):
         '''
         This method deletes the user_articles of the user if that article it is not in other subscription the user is subscribed.
@@ -84,10 +68,10 @@ class UserArticleHelper():
         articles_id_of_user_articles = [user_article.article.id for user_article in user_articles_to_delete_list]
         user_articles_to_delete.delete()
         still_readable_articles_id = list(
-            UserArticle.objects.user_articles_of_articles_id(articles_id_of_user_articles).values_list('article_id',flat=True))
+            UserArticle.objects.user_articles_of_articles_id(articles_id_of_user_articles).values_list('article_id',
+                                                                                                       flat=True))
 
         self._delete_not_more_readable_articles(articles_id_of_user_articles, still_readable_articles_id)
-
 
     def _delete_not_more_readable_articles(self, articles_id_of_user_articles, still_readable_articles_id):
 
@@ -96,11 +80,8 @@ class UserArticleHelper():
         articles_to_delete.delete()
 
     def remove_old_user_articles_from_subscription_and_user(self, subscription, user):
-<<<<<<< HEAD
-        updated_user_articles_id = UserArticle.objects.all_user_articles_from_user_and_subscription_sorted_in_ascending_date_order(user,subscription).values_list('id',flat=True)
-=======
-        updated_user_articles_id = UserArticle.objects.all_user_articles_from_user_and_subscription_sorted_ascending_date_order(user,subscription).values_list('id',flat=True)
->>>>>>> 6-como-un-usuario-quiero-marcar-como-leido-no-leido-un-articulo
+        updated_user_articles_id = UserArticle.objects.all_user_articles_from_user_and_subscription_sorted_in_ascending_date_order(
+            user, subscription).values_list('id', flat=True)
         if (len(updated_user_articles_id) > MAX_PERMITTED_ARTICLES):
             user_articles_to_be_deleted_id = updated_user_articles_id[:len(updated_user_articles_id) - MAX_PERMITTED_ARTICLES]
             user_articles_to_be_deleted = UserArticle.objects.filter(id__in=user_articles_to_be_deleted_id)

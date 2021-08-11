@@ -24,15 +24,6 @@ class RefreshSubscriptionsTest(APITestCase):
         self.test_helper.create_and_login_user('newuser', self.client)
         user = User.objects.get(id=1)
         subscription.users_subscribed.add(user)
-<<<<<<< HEAD
-        resp = self.client.put('/main_app/subscriptions/1/')
-        self.assertEqual(resp.status_code, HTTPStatus.OK)
-
-    def test_user_can_not_refresh_subscription_if_not_subscribed(self):
-        SubscriptionFeeds.objects.create(link='https://falseurl.com')
-        self.test_helper.create_and_login_user('newuser', self.client)
-        resp = self.client.put('/main_app/subscriptions/1/')
-=======
         resp = self.client.put('/main_app/subscriptions/'+ str(subscription.id) +'/')
         self.assertEqual(resp.status_code, HTTPStatus.OK)
 
@@ -40,72 +31,40 @@ class RefreshSubscriptionsTest(APITestCase):
         subscription = SubscriptionFeeds.objects.create(link='https://falseurl.com')
         self.test_helper.create_and_login_user('newuser', self.client)
         resp = self.client.put('/main_app/subscriptions/'+ str(subscription.id) +'/')
->>>>>>> 6-como-un-usuario-quiero-marcar-como-leido-no-leido-un-articulo
         self.assertEqual(resp.data['detail'], 'You are not subscribed to that feed. Subscribe first.')
 
     @patch.object(SubscriptionFeedHelper, 'parse_data')
     def test_user_old_articles_are_not_deleted_when_max_limit_not_passed(self, url_parser):
         url_parser.return_value = self.test_helper.false_subscription
-<<<<<<< HEAD
-        self.test_helper.submit_post_creating_user('newuser', {"link": self.rss_url}, self.client)
-        self.assertEqual(len(Article.objects.all()), 1)
-        url_parser.return_value = self.test_helper.false_subscription_with_other_articles
-        resp = self.client.put('/main_app/subscriptions/1/').data
-=======
         subscription_id = self.test_helper.submit_post_creating_user('newuser', {"link": self.rss_url}, self.client).data['id']
         self.assertEqual(len(Article.objects.all()), 1)
         url_parser.return_value = self.test_helper.false_subscription_with_other_articles
         resp = self.client.put('/main_app/subscriptions/' + str(subscription_id) + '/')
->>>>>>> 6-como-un-usuario-quiero-marcar-como-leido-no-leido-un-articulo
         self.assertEqual(len(Article.objects.all()), 2)
 
     @patch.object(SubscriptionFeedHelper, 'parse_data')
     def test_user_old_articles_are_deleted_when_max_limit_is_passed(self, url_parser):
         url_parser.return_value = self.test_helper.false_subscription
-<<<<<<< HEAD
-        self.test_helper.submit_post_creating_user('newuser', {"link": self.rss_url}, self.client)
-        self.assertEqual(len(Article.objects.all()), 1)
-        url_parser.return_value = self.test_helper.false_subscription_with_10_articles
-        resp = self.client.put('/main_app/subscriptions/1/').data
-=======
         subscription_id = self.test_helper.submit_post_creating_user('newuser', {"link": self.rss_url}, self.client).data['id']
         self.assertEqual(len(Article.objects.all()), 1)
         url_parser.return_value = self.test_helper.false_subscription_with_10_articles
         resp = self.client.put('/main_app/subscriptions/' + str(subscription_id) + '/')
->>>>>>> 6-como-un-usuario-quiero-marcar-como-leido-no-leido-un-articulo
         self.assertEqual(len(Article.objects.all()), 10)
         self.assertEqual(Article.objects.filter(title='Title').first(), None)
 
     @patch.object(SubscriptionFeedHelper, 'parse_data')
     def test_user_articles_are_received_in_correct_order_after_updating(self, url_parser):
         url_parser.return_value = self.test_helper.false_subscription
-<<<<<<< HEAD
-        self.test_helper.submit_post_creating_user('newuser', {"link": self.rss_url}, self.client)
-        self.assertEqual(len(Article.objects.all()), 1)
-        url_parser.return_value = self.test_helper.false_subscription_with_other_articles
-        resp = self.client.put('/main_app/subscriptions/1/').data
-=======
         subscription_id = self.test_helper.submit_post_creating_user('newuser', {"link": self.rss_url}, self.client).data['id']
         self.assertEqual(len(Article.objects.all()), 1)
         url_parser.return_value = self.test_helper.false_subscription_with_other_articles
         resp = self.client.put('/main_app/subscriptions/' + str(subscription_id) + '/').data
->>>>>>> 6-como-un-usuario-quiero-marcar-como-leido-no-leido-un-articulo
         self.assertEqual(resp['user_articles'][0]['article']['title'], 'Title2')
         self.assertEqual(resp['user_articles'][1]['article']['title'], 'Title')
 
     @patch.object(SubscriptionFeedHelper, 'parse_data')
     def test_user_receives_number_of_new_articles_after_updating(self, url_parser):
         url_parser.return_value = self.test_helper.false_subscription
-<<<<<<< HEAD
-        self.test_helper.submit_post_creating_user('newuser', {"link": self.rss_url}, self.client)
-        self.assertEqual(len(Article.objects.all()), 1)
-        url_parser.return_value = self.test_helper.false_subscription_with_other_articles
-        resp = self.client.put('/main_app/subscriptions/1/').data
-        self.assertEqual(resp['number_of_new_articles'], 1)
-        self.assertEqual(len(Article.objects.all()), 2)
-        url_parser.return_value = self.test_helper.false_subscription_with_10_articles
-        resp = self.client.put('/main_app/subscriptions/1/').data
-=======
         subscription_id = self.test_helper.submit_post_creating_user('newuser', {"link": self.rss_url}, self.client).data['id']
 
         url_parser.return_value = self.test_helper.false_subscription_with_other_articles
@@ -114,7 +73,6 @@ class RefreshSubscriptionsTest(APITestCase):
 
         url_parser.return_value = self.test_helper.false_subscription_with_10_articles
         resp = self.client.put('/main_app/subscriptions/' + str(subscription_id) + '/').data
->>>>>>> 6-como-un-usuario-quiero-marcar-como-leido-no-leido-un-articulo
         self.assertEqual(resp['number_of_new_articles'], 10)
 
 

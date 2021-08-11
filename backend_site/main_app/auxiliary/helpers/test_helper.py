@@ -21,7 +21,7 @@ class TestUtils(TestCase):
                               {'title': 'Title09', 'link': 'false_link09', 'summary': 'false_summary09'},
                               {'title': 'Title10', 'link': 'false_link10', 'summary': 'false_summary10'},
                               ]}
-
+    many_false_subscriptions= ['https://falseurl.com','https://falseurl2.com']
     def create_and_login_user(self, username, client):
         data = {"username": username, "password": 'password123', "email": 'newuser@gmail.com'}
         resp = client.post('/main_app/register/', data).json()

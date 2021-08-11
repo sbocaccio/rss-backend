@@ -2,22 +2,14 @@ import feedparser
 from http import HTTPStatus
 from rest_framework import serializers
 
+from .constants import MAX_PERMITTED_ARTICLES
 from .user_article_helper import UserArticleHelper
+from ..exceptions.user_already_subscribed_exception import UserAlreadySubscribedException
 from ...models.subscription_feed_model import SubscriptionFeeds
 from ...models.user_article import UserArticle
-<<<<<<< HEAD
 
 
 class SubscriptionFeedHelper():
-    MAX_PERMITTED_ARTICLES = 10
-=======
-from ..exceptions.user_already_subscribed_exception import UserAlreadySubscribedException
-
-from .constants import MAX_PERMITTED_ARTICLES
-
-
-class SubscriptionFeedHelper():
->>>>>>> 6-como-un-usuario-quiero-marcar-como-leido-no-leido-un-articulo
 
     def parse_data(self, data):
         feed_parse = self._assert_can_parse(data)
@@ -50,29 +42,21 @@ class SubscriptionFeedHelper():
 
         user_article_helper = UserArticleHelper()
         user_article_helper.remove_old_user_articles_from_subscription_and_user(subscription, user)
-<<<<<<< HEAD
+
         updated_articles = UserArticle.objects.all_user_articles_from_user_and_subscription_sorted_in_descending_date_order(
-=======
-        updated_articles = UserArticle.objects.all_user_articles_from_user_and_subscription_sorted_descending_date_order(
->>>>>>> 6-como-un-usuario-quiero-marcar-como-leido-no-leido-un-articulo
             user, subscription)
         return updated_articles, new_articles_cant
+
+
     def _update_articles_for_subscription(self, subscription, parsed_data, user):
         if ('entries' in parsed_data):
             user_article_helper = UserArticleHelper()
-<<<<<<< HEAD
-            newest_articles = parsed_data['entries'][0:(min(10, len(parsed_data['entries'])))]
-            articles, new_articles_cant = user_article_helper.create_user_articles(newest_articles, subscription, user)
-            return articles, new_articles_cant
-
-    def create_feed(self, validated_data, user):
-=======
             newest_articles = parsed_data['entries'][0:(min(MAX_PERMITTED_ARTICLES, len(parsed_data['entries'])))]
             articles, new_articles_cant = user_article_helper.create_user_articles(newest_articles, subscription, user)
             return articles, new_articles_cant
 
-    def _create_feed(self, validated_data, user):
->>>>>>> 6-como-un-usuario-quiero-marcar-como-leido-no-leido-un-articulo
+
+    def create_feed(self, validated_data, user):
         parsed_data = self._parse_data(validated_data)
         subscription = self._get_or_create_subscription_model(parsed_data, user)[0]
         subscription.users_subscribed.add(user)
@@ -81,6 +65,7 @@ class SubscriptionFeedHelper():
             subscription.subscription_articles.add(*articles)
         subscription.save()
         return subscription
+
 
     def _get_or_create_subscription_model(self, parsed_data, user):
         result = None
@@ -100,6 +85,7 @@ class SubscriptionFeedHelper():
             )
         return subscription, created
 
+
     def _parse_data(self, validated_data):
         try:
             feed_helper = SubscriptionFeedHelper()
@@ -107,6 +93,7 @@ class SubscriptionFeedHelper():
         except AttributeError as error:
             raise serializers.ValidationError({'message': error}, code='400')
         return parse_data
+
 
     def _create_articles_for_subscription(self, subscription, parsed_data, user):
         if ('entries' in parsed_data):

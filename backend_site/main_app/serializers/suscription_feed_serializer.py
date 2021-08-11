@@ -21,10 +21,6 @@ class CreateFeedSerializers(serializers.ModelSerializer):
     def create(self, validated_data):
         subscription_helper = SubscriptionFeedHelper()
         user = self.context['request'].user
-<<<<<<< HEAD
-        feed = subscription_helper.create_feed(validated_data,user)
-=======
-        feed = subscription_helper._create_feed(validated_data,user)
->>>>>>> 6-como-un-usuario-quiero-marcar-como-leido-no-leido-un-articulo
+        feed = subscription_helper.create_feed(validated_data, user)
         return feed
 
