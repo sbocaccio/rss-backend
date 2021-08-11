@@ -6,16 +6,19 @@ from .models.subscription_feed_model import SubscriptionFeeds
 from .models.user_article import UserArticle
 
 
-def customTitledFilter(title):
-    class Wrapper(admin.FieldListFilter):
-        def __new__(cls, *args, **kwargs):
-            instance = admin.FieldListFilter.create(*args, **kwargs)
-            instance.title = title
-            return instance
-    return Wrapper
 
 @admin.register(Article)
 class ArticleAdmin(admin.ModelAdmin):
+
+    def customTitledFilter(title):
+        class Wrapper(admin.FieldListFilter):
+            def __new__(cls, *args, **kwargs):
+                instance = admin.FieldListFilter.create(*args, **kwargs)
+                instance.title = title
+                return instance
+
+        return Wrapper
+    
     list_display = ("link", "title",'subscriptions_its_belongs',"created_at")
     search_fields = ("link", "title")
     list_filter = (("subscriptions_feed__title", customTitledFilter('subscriptions its belongs'))
