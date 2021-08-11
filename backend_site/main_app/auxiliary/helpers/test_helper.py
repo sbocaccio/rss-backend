@@ -5,6 +5,8 @@ from rest_framework.test import APITestCase, APIClient
 
 class TestUtils(TestCase):
 
+    other_false_subscription = {'link': 'https://falseurl2.com', 'title': "Mom2",
+                  'entries': [{'title': 'Title', 'link': 'false_link', 'summary': 'false_summary'}]}
     false_subscription = {'link': 'https://falseurl.com', 'title': "Mom",
                   'entries': [{'title': 'Title', 'link': 'false_link', 'summary': 'false_summary'}]}
     false_subscription_with_other_articles = {'link': 'https://falseurl.com', 'title': "Mom",
