@@ -4,7 +4,7 @@
 		<title>My Feeds</title>
 	</head>
 	<body>
-		<outline text="24 ways" htmlUrl="http://24ways.org/" type="rss" xmlUrl="https://www.clarin.com/rss/deportes/tenis/"/>
-		
+		<outline text="24 ways" htmlUrl="http://24ways.org/" type="rss" xmlUrl="https://www.clarin.com/rss/deportes/rugby/"/>
+		<outline text="24 ways" htmlUrl="http://24ways.org/" type="rss" xmlUrl="https://www.clarin.com/rss/deportes/messi/"/>
 	</body>
 </opml> 

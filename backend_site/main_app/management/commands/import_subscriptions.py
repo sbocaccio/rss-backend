@@ -53,7 +53,7 @@ class Command(BaseCommand):
 
     def getUser(self, usernames,all_user_activated):
         self.stdout.write('Starting to retrieve users from database')
-        users = []
+        users = None
         if(all_user_activated):
             users = list(User.objects.all())
         else:

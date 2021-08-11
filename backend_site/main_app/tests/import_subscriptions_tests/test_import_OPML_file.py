@@ -27,12 +27,13 @@ class ImportOPMLFileSubscription(APITestCase):
 
     def test_command_raises_error_when_there_is_not_any_user(self):
         try:
-            call_command('import_subscriptions', 'main_app/tests/import_subscriptions_tests/one_feed.opml')
+
+            call_command('import_subscriptions', 'main_app/tests/import_subscriptions_tests/one_feed.opml',stdout= '')
         except NotUserReceived as error:
             self.assertEquals(error.args[0], "Error: Any valid user had been passed")
 
     @patch.object(SubscriptionFeedHelper, 'parse_data')
-    def test_command_create_subscription_for_existing_user_and_subscribe_user(self, url_parser):
+    def test_command_create_subscription_for_existing_user(self, url_parser):
         out = StringIO()
         url_parser.return_value = self.test_helper.false_subscription
         user = User.objects.create_user(username='username', password='password', email='email@email.com')
@@ -101,22 +102,6 @@ class ImportOPMLFileSubscription(APITestCase):
         assert (user in subscription.users_subscribed.all())
         assert ('ERROR: not_valid_username is not registered so is not going to be add to any subscription' in out)
         assert ('Successfully added user "username" to subscription' in out)
-
-
-
-    @patch.object(SubscriptionFeedHelper, 'parse_data')
-    def test_user_can_get_subscribed_to_many_subscriptions(self, url_parser):
-        url_parser.return_value = self.test_helper.false_subscription
-        user = User.objects.create_user(username='username', password='password', email='email@email.com')
-        out = StringIO()
-        call_command('import_subscriptions', 'main_app/tests/import_subscriptions_tests/one_feed.opml', ['not_valid_username','username'],
-                     stdout=out)
-        out = out.getvalue()
-        subscription = SubscriptionFeeds.objects.first()
-        assert (user in subscription.users_subscribed.all())
-        assert ('ERROR: not_valid_username is not registered so is not going to be add to any subscription' in out)
-        assert ('Successfully added user "username" to subscription' in out)
-
 
     @patch.object(SubscriptionFeedHelper, 'parse_data')
     def test_all_user_are_subscribed_using_all_argument(self,url_parser):
