@@ -25,8 +25,7 @@ class ArticleAdmin(admin.ModelAdmin):
                    , "created_at")
 
     def subscriptions_its_belongs(self, article):
-        return ", ".join(
-            [str(subscription) for subscription in article.subscriptions_feed.all().values_list('title', flat=True)])
+        return len(article.subscriptions_feed.all())
 
 
 @admin.register(SubscriptionFeeds)
@@ -36,7 +35,7 @@ class SubscriptionFeedsAdmin(admin.ModelAdmin):
     list_filter = ["title", 'users_subscribed']
 
     def users__subscribed(self, subscription):
-        return ", ".join([str(user) for user in subscription.users_subscribed.all()])
+        return len(subscription.users_subscribed.all())
 
 @admin.register(UserArticle)
 class UserArticleAdmin(admin.ModelAdmin):
