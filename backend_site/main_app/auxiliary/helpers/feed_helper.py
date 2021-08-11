@@ -32,10 +32,10 @@ class SubscriptionFeedHelper():
             raise AttributeError('Impossible to parse URL.')
         return feed_parse
 
-    def update_subscription(self, subscription, user):
+    def update_subscription_of_user(self, subscription, user):
         subscription_link = {"link": subscription.link}
         parsed_data = self._parse_data(subscription_link)
-        articles, new_articles_cant = self._update_articles_for_subscription(subscription, parsed_data, user)
+        articles, new_articles_cant = self._update_articles_for_subscription_of_user(subscription, parsed_data, user)
         if articles:
             subscription.subscription_articles.add(*articles)
             subscription.save()
@@ -48,7 +48,7 @@ class SubscriptionFeedHelper():
         return updated_articles, new_articles_cant
 
 
-    def _update_articles_for_subscription(self, subscription, parsed_data, user):
+    def _update_articles_for_subscription_of_user(self, subscription, parsed_data, user):
         if ('entries' in parsed_data):
             user_article_helper = UserArticleHelper()
             newest_articles = parsed_data['entries'][0:(min(MAX_PERMITTED_ARTICLES, len(parsed_data['entries'])))]
@@ -60,12 +60,21 @@ class SubscriptionFeedHelper():
         parsed_data = self._parse_data(validated_data)
         subscription = self._get_or_create_subscription_model(parsed_data, user)[0]
         subscription.users_subscribed.add(user)
-        articles = self._create_articles_for_subscription(subscription, parsed_data, user)
-        if articles:
-            subscription.subscription_articles.add(*articles)
         subscription.save()
         return subscription
 
+    def add_user_to_subscription(self, subscription_id, users):
+        try:
+            subscription = SubscriptionFeeds.objects.get(id= subscription_id)
+            subscription.users_subscribed.add(user)
+            parsed_data = self._parse_data(subscription.link)
+            articles = self._create_articles_for_subscription(subscription, parsed_data, user)
+            if articles:
+                subscription.subscription_articles.add(*articles)
+            subscription.save()
+
+        except UserArticle.DoesNotExist:
+                raise Exception
 
     def _get_or_create_subscription_model(self, parsed_data, user):
         result = None

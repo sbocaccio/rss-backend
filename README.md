@@ -65,4 +65,4 @@ Usage:
 
 How to subscribe all users:
 
-    python3 manage.py import_subscriptions --all
+    python3 manage.py import_subscriptions path/to/opml/file --all

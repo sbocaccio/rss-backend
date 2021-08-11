@@ -19,7 +19,7 @@ class Command(BaseCommand):
         parser.add_argument('--all', help='Add all users to the subscriptions.', action='store_const', const=True)
 
     def handle(self, *args, **options):
-        users = self.getUser(options['users'], options['all'])
+        users = self.get_users(options['users'], options['all'])
         file = options['file']
         feeds = self.OPML_parse(file)
         subscription_helper = SubscriptionFeedHelper()
@@ -53,7 +53,7 @@ class Command(BaseCommand):
                 urls.append(url)
         return urls
 
-    def getUser(self, usernames, all_user_activated):
+    def get_users(self, usernames, all_user_activated):
         self.stdout.write('Starting to retrieve users from database')
         users = None
         if (all_user_activated):

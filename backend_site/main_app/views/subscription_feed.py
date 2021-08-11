@@ -50,7 +50,7 @@ class SubscriptionFeedAPI(viewsets.ModelViewSet):
     def refresh(self, *args, **kwargs):
         subscription = self.check_user_is_subscribed_to_subscription(kwargs['pk'], self.request.user)
         subscription_helper = SubscriptionFeedHelper()
-        user_articles,number_of_new_articles = subscription_helper.update_subscription(subscription, self.request.user)
+        user_articles,number_of_new_articles = subscription_helper.update_subscription_of_user(subscription, self.request.user)
         data=UserArticleSerializers(instance= user_articles, many= True)
         response = {
             'number_of_new_articles': number_of_new_articles,
