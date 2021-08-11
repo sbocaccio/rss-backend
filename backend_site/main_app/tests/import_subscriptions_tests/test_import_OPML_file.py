@@ -9,7 +9,7 @@ from ...auxiliary.exceptions.no_users_recieved_exception import NotUserReceived
 from ...auxiliary.helpers.feed_helper import SubscriptionFeedHelper
 from ...auxiliary.helpers.test_helper import TestUtils
 from ...models.subscription_feed_model import SubscriptionFeeds
-
+import os
 
 class ImportOPMLFileSubscription(APITestCase):
 
@@ -27,8 +27,8 @@ class ImportOPMLFileSubscription(APITestCase):
 
     def test_command_raises_error_when_there_is_not_any_user(self):
         try:
-
-            call_command('import_subscriptions', 'main_app/tests/import_subscriptions_tests/one_feed.opml',stdout= '')
+            out = StringIO()
+            call_command('import_subscriptions', 'main_app/tests/import_subscriptions_tests/one_feed.opml',stdout=out)
         except NotUserReceived as error:
             self.assertEquals(error.args[0], "Error: Any valid user had been passed")
 

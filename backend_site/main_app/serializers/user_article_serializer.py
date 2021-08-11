@@ -8,4 +8,4 @@ class UserArticleSerializers(serializers.ModelSerializer):
     article = ArticleSerializers()
     class Meta:
         model = UserArticle
-        fields = ['user', 'article','read']
+        fields = ['user', 'article','read','pk']

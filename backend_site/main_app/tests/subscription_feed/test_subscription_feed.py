@@ -72,7 +72,7 @@ class SubscriptionFeedTest(APITestCase):
         data = {"link": self.rss_url}
         self.client.post("/main_app/feed/", data)
         resp = self.client.post("/main_app/feed/", data)
-        self.assertEqual(resp.data['message'], 'User is already subscribed to that page.')
+        self.assertEqual(resp.data['detail'], 'User is already subscribed to that page.')
 
     @patch.object(SubscriptionFeedHelper, 'parse_data')
     def test_user_can_receives_her_subscriptions_using_get_request(self, url_parser):

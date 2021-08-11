@@ -6,11 +6,11 @@ class UserArticleManager(models.Manager):
         return self.annotate(
             num_subscription=Count('article__subscriptions_feed')).filter(user=user, num_subscription=1,article__in= articles_of_subscription)
 
-    def all_user_articles_from_user_and_subscription_sorted_in_ascending_date_order(self,user,subscription):
+    def all_user_articles_from_user_and_subscription_sorted_ascending_date_order(self,user,subscription):
         return self.filter(article__in=list(subscription.subscription_articles.all()),
                                                            user=user).order_by('article__created_at')
 
-    def all_user_articles_from_user_and_subscription_sorted_in_descending_date_order(self, user, subscription):
+    def all_user_articles_from_user_and_subscription_sorted_descending_date_order(self, user, subscription):
         return self.filter(article__in=list(subscription.subscription_articles.all()),
                            user=user).order_by('-article__created_at')
 

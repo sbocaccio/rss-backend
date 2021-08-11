@@ -72,8 +72,11 @@ class DeleteSubscriptionsTest(APITestCase):
         link  = '/main_app/subscriptions/' + str(subscription_id) + '/'
         self.assertEqual(len(Article.objects.all()), 1)
         resp = self.client.delete(link)
+<<<<<<< HEAD
         self.assertEqual(len(SubscriptionFeeds.objects.all()), 0)
         self.assertEqual(len(UserArticle.objects.all()), 0)
+=======
+>>>>>>> 6-como-un-usuario-quiero-marcar-como-leido-no-leido-un-articulo
         self.assertEqual(len(Article.objects.all()), 0)
 
 
