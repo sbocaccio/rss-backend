@@ -60,6 +60,9 @@ class SubscriptionFeedHelper():
         parsed_data = self._parse_data(validated_data)
         subscription = self._get_or_create_subscription_model(parsed_data, user)[0]
         subscription.users_subscribed.add(user)
+        articles = self._create_articles_for_subscription(subscription, parsed_data, user)
+        if articles:
+            subscription.subscription_articles.add(*articles)
         subscription.save()
         return subscription
 
