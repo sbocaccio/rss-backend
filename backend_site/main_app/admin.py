@@ -10,7 +10,7 @@ from .models.user_article import UserArticle
 @admin.register(Article)
 class ArticleAdmin(admin.ModelAdmin):
 
-    def customTitledFilter(title):
+    def custom_titled_filter(title):
         class Wrapper(admin.FieldListFilter):
             def __new__(cls, *args, **kwargs):
                 instance = admin.FieldListFilter.create(*args, **kwargs)
@@ -18,10 +18,10 @@ class ArticleAdmin(admin.ModelAdmin):
                 return instance
 
         return Wrapper
-    
+
     list_display = ("link", "title",'subscriptions_its_belongs',"created_at")
     search_fields = ("link", "title")
-    list_filter = (("subscriptions_feed__title", customTitledFilter('subscriptions its belongs'))
+    list_filter = (("subscriptions_feed__title", custom_titled_filter('subscriptions it belongs'))
                    , "created_at")
 
     def subscriptions_its_belongs(self, article):
