@@ -3,7 +3,6 @@ import sys
 from django.contrib.auth.models import User
 from django.core.management.base import BaseCommand, CommandError
 from rest_framework.serializers import ValidationError
-from termcolor import colored
 from xml.etree import ElementTree
 
 from ...auxiliary.exceptions.no_users_recieved_exception import NotUserReceived
