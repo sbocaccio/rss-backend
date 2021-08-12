@@ -25,7 +25,7 @@ class ArticleAdmin(admin.ModelAdmin):
                    , "created_at")
 
     def subscriptions_its_belongs(self, article):
-        return len(article.subscriptions_feed.all())
+        return article.subscriptions_feed.all().count()
 
 
 @admin.register(SubscriptionFeeds)
@@ -35,7 +35,7 @@ class SubscriptionFeedsAdmin(admin.ModelAdmin):
     list_filter = ["title", 'users_subscribed']
 
     def users__subscribed(self, subscription):
-        return len(subscription.users_subscribed.all())
+        return subscription.users_subscribed.all().count()
 
 @admin.register(UserArticle)
 class UserArticleAdmin(admin.ModelAdmin):
