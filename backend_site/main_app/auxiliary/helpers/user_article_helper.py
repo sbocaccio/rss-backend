@@ -6,7 +6,6 @@ from ...models.article import Article
 from ...models.user_article import UserArticle
 from .constants import MAX_PERMITTED_ARTICLES
 
-
 class UserArticleHelper():
 
     def get_or_create_article(self, article, subscription):
