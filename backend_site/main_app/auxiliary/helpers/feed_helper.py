@@ -56,6 +56,7 @@ class SubscriptionFeedHelper():
             return articles, new_articles_cant
 
 
+
     def create_feed(self, validated_data, user):
         parsed_data = self._parse_data(validated_data)
         subscription = self._get_or_create_subscription_model(parsed_data, user)[0]

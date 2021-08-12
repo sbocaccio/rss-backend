@@ -73,7 +73,8 @@ class DeleteSubscriptionsTest(APITestCase):
         self.assertEqual(len(Article.objects.all()), 1)
         resp = self.client.delete(link)
         self.assertEqual(len(Article.objects.all()), 0)
-
+        self.assertEqual(len(SubscriptionFeeds.objects.all()), 0)
+        self.assertEqual(len(UserArticle.objects.all()), 0)
 
 
     @patch.object(SubscriptionFeedHelper, 'parse_data')

@@ -11,14 +11,24 @@ from .auxiliary.helpers.admin_helper import customTitledFilter
 
 @admin.register(Article)
 class ArticleAdmin(admin.ModelAdmin):
-    list_display = ("link", "title", 'created_at', 'subscriptions_its_belongs')
+
+    def custom_titled_filter(title):
+        class Wrapper(admin.FieldListFilter):
+            def __new__(cls, *args, **kwargs):
+                instance = admin.FieldListFilter.create(*args, **kwargs)
+                instance.title = title
+                return instance
+
+        return Wrapper
+
+    list_display = ("link", "title",'subscriptions_its_belongs',"created_at")
     search_fields = ("link", "title")
-    list_filter = (("subscriptions_feed__title", customTitledFilter('subscriptions its belongs'))
+    list_filter = (("subscriptions_feed__title", custom_titled_filter('subscriptions it belongs'))
                    , "created_at")
 
     def subscriptions_its_belongs(self, article):
-        return ", ".join(
-            [str(subscription) for subscription in article.subscriptions_feed.all().values_list('title', flat=True)])
+        return article.subscriptions_feed.all().count()
+
 
 
 @admin.register(SubscriptionFeeds)
@@ -28,8 +38,7 @@ class SubscriptionFeedsAdmin(admin.ModelAdmin):
     list_filter = ["title", 'users_subscribed']
 
     def users__subscribed(self, subscription):
-        return ", ".join([str(user) for user in subscription.users_subscribed.all()])
-
+        return subscription.users_subscribed.all().count()
 
 @admin.register(UserArticle)
 class UserArticleAdmin(admin.ModelAdmin):
