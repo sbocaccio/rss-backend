@@ -30,7 +30,6 @@ class ArticleAdmin(admin.ModelAdmin):
         return article.subscriptions_feed.all().count()
 
 
-
 @admin.register(SubscriptionFeeds)
 class SubscriptionFeedsAdmin(admin.ModelAdmin):
     list_display = ("link", "title", 'users__subscribed')
