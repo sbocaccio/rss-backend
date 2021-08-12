@@ -7,7 +7,6 @@ from django.db.models import Count
 from ...models.article import Article
 from ...models.user_article import UserArticle
 from .constants import MAX_PERMITTED_ARTICLES
-
 class UserArticleHelper():
 
     def get_or_create_article(self, article, subscription):
@@ -81,7 +80,7 @@ class UserArticleHelper():
         articles_to_delete.delete()
 
     def remove_old_user_articles_from_subscription_and_user(self, subscription, user):
-        updated_user_articles_id = UserArticle.objects.all_user_articles_from_user_and_subscription_sorted_ascending_date_order(user,subscription).values_list('id',flat=True)
+        updated_user_articles_id = UserArticle.objects.all_user_articles_from_user_and_subscription_sorted_in_ascending_date_order(user,subscription).values_list('id',flat=True)
         if (len(updated_user_articles_id) > MAX_PERMITTED_ARTICLES):
             user_articles_to_be_deleted_id = updated_user_articles_id[:len(updated_user_articles_id) - MAX_PERMITTED_ARTICLES]
             user_articles_to_be_deleted = UserArticle.objects.filter(id__in=user_articles_to_be_deleted_id)

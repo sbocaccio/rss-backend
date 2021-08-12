@@ -9,5 +9,7 @@ class SubscriptionFeeds(models.Model):
     image = models.ImageField(null=True, blank = True)
     subscription_articles = models.ManyToManyField('Article')
 
+    def __str__(self):
+        return self.title
 
 

@@ -18,6 +18,7 @@ from ..serializers.user_article_serializer import UserArticleSerializers
 class SubscriptionFeedAPI(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = CreateFeedSerializers
+    lookup_field = 'pk'
 
     def get_queryset(self):
         user = self.request.user

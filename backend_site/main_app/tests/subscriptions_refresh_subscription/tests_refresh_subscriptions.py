@@ -75,8 +75,3 @@ class RefreshSubscriptionsTest(APITestCase):
         resp = self.client.put('/main_app/subscriptions/' + str(subscription_id) + '/').data
         self.assertEqual(resp['number_of_new_articles'], 10)
 
-
-
-
-
-
