@@ -31,12 +31,13 @@ class SubscriptionFeedHelper():
     def update_subscription_of_user(self, subscription, user):
         subscription_link = {"link": subscription.link}
         parsed_data = self.parse_data(subscription_link)
-        articles, new_articles_cant = self._update_articles_for_subscription_of_user(subscription, parsed_data, user)
+        articles = self._create_articles_for_subscription(subscription, parsed_data)
+
         if articles:
             subscription.subscription_articles.add(*articles)
-            subscription.save()
-
         user_article_helper = UserArticleHelper()
+        user_articles_created,new_articles_cant =user_article_helper.create_user_articles(articles, user)
+
         user_article_helper.remove_old_user_articles_from_subscription_and_user(subscription, user)
         updated_articles = UserArticle.objects.all_user_articles_from_user_and_subscription_sorted_in_descending_date_order(
             user, subscription)
@@ -46,7 +47,7 @@ class SubscriptionFeedHelper():
         if ('entries' in parsed_data):
             user_article_helper = UserArticleHelper()
             newest_articles = parsed_data['entries'][0:(min(MAX_PERMITTED_ARTICLES, len(parsed_data['entries'])))]
-            articles, new_articles_cant = user_article_helper.create_user_articles(newest_articles, subscription, user)
+            articles, new_articles_cant = user_article_helper.create_user_articles(newest_articles, user)
             return articles, new_articles_cant
 
     def create_feed(self, subscription_parsed_data):
@@ -58,10 +59,14 @@ class SubscriptionFeedHelper():
             raise UserAlreadySubscribedException()
 
         subscription.users_subscribed.add(user)
-        articles = self._create_articles_for_subscription(subscription, subscription_parsed_data, user)
+        articles = self._create_articles_for_subscription(subscription, subscription_parsed_data,)
         if articles:
+
             subscription.subscription_articles.add(*articles)
+        user_article_helper = UserArticleHelper()
+        user_articles, cant_new_articles = user_article_helper.create_user_articles(articles, user)
         subscription.save()
+        return user_articles, cant_new_articles
 
     def _get_or_create_subscription_model(self, parsed_data):
         result = None
@@ -87,9 +92,17 @@ class SubscriptionFeedHelper():
             raise NotParseableLinkExcepcion()
         return parse_data
 
-    def _create_articles_for_subscription(self, subscription, parsed_data, user):
+    def _create_user_articles_for_user(self, articles , user):
+            user_articles, new_articles_cant = user_article_helper.create_user_articles(articles,user)
+            return user_articles,new_articles_cant
+
+    def _create_articles_for_subscription(self, subscription, parsed_data):
+        articles = []
         if ('entries' in parsed_data):
             user_article_helper = UserArticleHelper()
             last_articles = parsed_data['entries'][0:(min(MAX_PERMITTED_ARTICLES, len(parsed_data['entries'])))]
-            articles, new_articles_cant = user_article_helper.create_user_articles(last_articles, subscription, user)
-            return articles
+            last_articles.reverse() # Newer articles must have newer creation time
+            for article in last_articles:
+                article, created = user_article_helper.get_or_create_article(article, subscription)
+                articles.append(article)
+        return articles

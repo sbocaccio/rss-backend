@@ -40,16 +40,13 @@ class UserArticleHelper():
         user_article_fields['user'] = user
         user_article_model, created = UserArticle.objects.get_or_create(**user_article_fields)
         user_article_model.save()
-        return created
+        return user_article_model,created
 
-    def create_user_articles(self, articles, subscription, user):
-        articles.reverse()  # Newer feeds must be the latest created.
+    def create_user_articles(self, articles, user):
         all_articles = []
         articles_created = 0
         for article in articles:
-            article,created = self.get_or_create_article(article, subscription)
-            all_articles.append(article)
-            self.get_or_create_user_article(article, user)
+            user_article_model,created = self.get_or_create_user_article(article, user)
             if(created):
                 articles_created+=1
         return all_articles,articles_created
