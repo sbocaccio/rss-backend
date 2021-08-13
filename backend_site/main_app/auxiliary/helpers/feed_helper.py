@@ -31,41 +31,54 @@ class SubscriptionFeedHelper():
     def update_subscription_of_user(self, subscription, user):
         subscription_link = {"link": subscription.link}
         parsed_data = self.parse_data(subscription_link)
-        articles = self._create_articles_for_subscription(subscription, parsed_data)
+        articles = self.create_articles_for_subscription(subscription, parsed_data)
 
         if articles:
             subscription.subscription_articles.add(*articles)
         user_article_helper = UserArticleHelper()
-        user_articles_created,new_articles_cant =user_article_helper.create_user_articles(articles, user)
-
+        user_articles_created,new_articles_cant = self.create_user_articles_for_articles_and_user(articles, user)
         user_article_helper.remove_old_user_articles_from_subscription_and_user(subscription, user)
         updated_articles = UserArticle.objects.all_user_articles_from_user_and_subscription_sorted_in_descending_date_order(
             user, subscription)
         return updated_articles, new_articles_cant
 
-    def _update_articles_for_subscription_of_user(self, subscription, parsed_data, user):
-        if ('entries' in parsed_data):
-            user_article_helper = UserArticleHelper()
-            newest_articles = parsed_data['entries'][0:(min(MAX_PERMITTED_ARTICLES, len(parsed_data['entries'])))]
-            articles, new_articles_cant = user_article_helper.create_user_articles(newest_articles, user)
-            return articles, new_articles_cant
-
-    def create_feed(self, subscription_parsed_data):
+    def create_feed(self, subscription):
+        subscription_parsed_data = self.parse_data(subscription)
         subscription = self._get_or_create_subscription_model(subscription_parsed_data)[0]
         return subscription
+
+    def add_many_users_to_subscription(self,subscription,users):
+        parsed_data = self.parse_data(subscription)
+        articles = self.create_articles_for_subscription(subscription, parsed_data)
+        added_users = []
+        not_added_users = []
+        for user in users:
+            if user in subscription.users_subscribed.all():
+                not_added_users.append((user, UserAlreadySubscribedException()))
+            else:
+                subscription.users_subscribed.add(user)
+                user_article_helper = UserArticleHelper()
+                user_article_helper.create_user_articles(articles, user)
+                added_users.append(user)
+        subscription.save()
+        return added_users, not_added_users
+
 
     def add_user_to_subscription(self, subscription, user, subscription_parsed_data):
         if user in subscription.users_subscribed.all():
             raise UserAlreadySubscribedException()
 
         subscription.users_subscribed.add(user)
-        articles = self._create_articles_for_subscription(subscription, subscription_parsed_data,)
+        articles = self.create_articles_for_subscription(subscription, subscription_parsed_data,)
         if articles:
-
             subscription.subscription_articles.add(*articles)
+        subscription.save()
+
+        return self.create_user_articles_for_articles_and_user(articles, user)
+
+    def create_user_articles_for_articles_and_user(self, articles, user):
         user_article_helper = UserArticleHelper()
         user_articles, cant_new_articles = user_article_helper.create_user_articles(articles, user)
-        subscription.save()
         return user_articles, cant_new_articles
 
     def _get_or_create_subscription_model(self, parsed_data):
@@ -92,11 +105,7 @@ class SubscriptionFeedHelper():
             raise NotParseableLinkExcepcion()
         return parse_data
 
-    def _create_user_articles_for_user(self, articles , user):
-            user_articles, new_articles_cant = user_article_helper.create_user_articles(articles,user)
-            return user_articles,new_articles_cant
-
-    def _create_articles_for_subscription(self, subscription, parsed_data):
+    def create_articles_for_subscription(self, subscription, parsed_data):
         articles = []
         if ('entries' in parsed_data):
             user_article_helper = UserArticleHelper()

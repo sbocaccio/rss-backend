@@ -137,7 +137,7 @@ class ImportOPMLFileSubscription(APITestCase):
     @patch.object(SubscriptionFeedHelper, 'parse_data')
     def test_users_can_subscribe_to_many_subscriptions(self, url_parser):
         out = StringIO()
-        url_parser.side_effect = [self.test_helper.false_subscription, self.test_helper.other_false_subscription]
+        url_parser.side_effect = [self.test_helper.false_subscription,self.test_helper.false_subscription,self.test_helper.other_false_subscription,self.test_helper.other_false_subscription]
         user1 = User.objects.create_user(username='username1', password='password', email='email1@email.com')
         call_command('import_subscriptions', self.many_feeds_file, '--all',
                      stdout=out)
@@ -149,7 +149,7 @@ class ImportOPMLFileSubscription(APITestCase):
     @patch.object(SubscriptionFeedHelper, 'parse_data')
     def test_many_users_can_subscribe_to_many_subscriptions(self, url_parser):
         out = StringIO()
-        url_parser.side_effect = [self.test_helper.false_subscription, self.test_helper.other_false_subscription]
+        url_parser.side_effect = [self.test_helper.false_subscription,self.test_helper.false_subscription, self.test_helper.other_false_subscription,self.test_helper.other_false_subscription]
         user1 = User.objects.create_user(username='username1', password='password', email='email1@email.com')
         user2 = User.objects.create_user(username='username2', password='password', email='email2@email.com')
         call_command('import_subscriptions', self.many_feeds_file, '--all', stdout=out)

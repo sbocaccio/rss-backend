@@ -30,23 +30,18 @@ class Command(BaseCommand):
         for feed in feeds:
             try:
                 feed_link = {'link':feed}
-                parsed_data = subscription_helper.parse_data(feed_link)
-                subscription = subscription_helper.create_feed(parsed_data)
-                self.add_users_to_subscription(subscription, parsed_data, subscription_helper, users)
+                subscription = subscription_helper.create_feed(feed_link)
+                self.add_users_to_subscription(subscription,subscription_helper, users)
             except NotParseableLinkExcepcion as error:
                 self.stdout.write(self.style.ERROR('ERROR: %s' % error.detail))
 
-    def add_users_to_subscription(self, subscription, parsed_data, subscription_helper, users):
-        self.stdout.write('Adding users to subscription %s' % subscription.title)
-        for user in users:
-            try:
-                self.add_user_to_subscription(subscription, subscription_helper, user, parsed_data)
-            except UserAlreadySubscribedException as error:
-                self.stdout.write(self.style.ERROR('ERROR: %s' % error.detail))
-            except ValidationError as error:
-                self.stdout.write(self.style.ERROR('ERROR: %s' % error.detail['message']))
-            else:
+    def add_users_to_subscription(self, subscription,subscription_helper,users):
+            self.stdout.write('Adding users to subscription %s' % subscription.title)
+            added_users, not_added_used = subscription_helper.add_many_users_to_subscription(subscription, users)
+            for user in added_users:
                 self.stdout.write(self.style.SUCCESS('Successfully added user "%s" to subscription ' % user))
+            for user, error in not_added_used:
+                self.stdout.write(self.style.ERROR('ERROR: %s' % error.detail))
 
     def add_user_to_subscription(self, subscription, subscription_helper, user,subscription_parsed_data):
         self.stdout.write('Adding %s to subscription' % user.username)
