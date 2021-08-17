@@ -7,14 +7,19 @@ from rest_framework import serializers
 from ..auxiliary.helpers.feed_helper import SubscriptionFeedHelper
 from ..auxiliary.helpers.user_article_helper import UserArticleHelper
 from ..models.subscription_feed_model import SubscriptionFeeds
+from ..models.user_folder import UserFolder
+
 
 
 class CreateFeedSerializers(serializers.ModelSerializer):
     link = serializers.URLField(max_length=255)
+    folders = serializers.SerializerMethodField('subscription_folders')
 
+    def subscription_folders(self, subscription):
+        return UserFolder.objects.filter(subscriptions_feed__id=subscription.id).values_list('name',flat = True)
     class Meta:
         model = SubscriptionFeeds
-        fields = ['link', 'title', 'image', 'id']
+        fields = ['link', 'title', 'image', 'id','folders']
         read_only_fields = ['title', 'image', 'id']
         lookup_field = 'id'
 

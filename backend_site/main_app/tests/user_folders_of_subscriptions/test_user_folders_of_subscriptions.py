@@ -81,19 +81,28 @@ class UserFolderTest(APITestCase):
         url_parser.return_value = self.test_helper.false_subscription
         subscription = self.test_helper.submit_post_creating_user('newuser', {"link": self.rss_url}, self.client).data[
             'id']
-
         folder1 = {'name': self.folder_name}
         folder_pk = self.client.post('/main_app/folder', folder1).json()['pk']
         data = {'subscription_id': subscription}
         self.client.put('/main_app/folder/' + str(folder_pk), data)
-
         folder2 = {'name': 'another_folder'}
         folder_pk = self.client.post('/main_app/folder', folder2).json()['pk']
         data = {'subscription_id': subscription}
         self.client.put('/main_app/folder/' + str(folder_pk), data)
         resp = self.client.put('/main_app/folder/' + str(folder_pk), data)
-
         user_folders = UserFolder.objects.all()
         self.assertEquals(user_folders.count(), 2)
         assert (subscription in user_folders[0].subscriptions_feed.all().values_list('id', flat=True))
         assert (subscription in user_folders[1].subscriptions_feed.all().values_list('id', flat=True))
+
+    @patch.object(SubscriptionFeedHelper, 'parse_data')
+    def test_user_the_folders_a_subscription_is_in(self, url_parser):
+        url_parser.return_value = self.test_helper.false_subscription
+        subscription = self.test_helper.submit_post_creating_user('newuser', {"link": self.rss_url}, self.client).data['id']
+        data = {'name': self.folder_name}
+        folder_pk = self.client.post('/main_app/folder', data).json()['pk']
+        data = {'subscription_id': subscription}
+        self.client.put('/main_app/folder/' + str(folder_pk), data)
+        subscriptions = self.client.get("/main_app/feed/").json()
+        self.assertEquals(len(subscriptions), 1)
+        assert(self.folder_name in subscriptions[0]['folders'])
