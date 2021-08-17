@@ -36,7 +36,7 @@ class SubscriptionFeedHelper():
         if articles:
             subscription.subscription_articles.add(*articles)
         user_article_helper = UserArticleHelper()
-        user_articles_created,new_articles_cant = self.create_user_articles_for_articles_and_user(articles, user)
+        user_articles_created,new_articles_cant = user_article_helper.create_user_articles(articles, user)
         user_article_helper.remove_old_user_articles_from_subscription_and_user(subscription, user)
         updated_articles = UserArticle.objects.all_user_articles_from_user_and_subscription_sorted_in_descending_date_order(
             user, subscription)
@@ -75,11 +75,6 @@ class SubscriptionFeedHelper():
         subscription.save()
 
         return self.create_user_articles_for_articles_and_user(articles, user)
-
-    def create_user_articles_for_articles_and_user(self, articles, user):
-        user_article_helper = UserArticleHelper()
-        user_articles, cant_new_articles = user_article_helper.create_user_articles(articles, user)
-        return user_articles, cant_new_articles
 
     def _get_or_create_subscription_model(self, parsed_data):
         result = None
