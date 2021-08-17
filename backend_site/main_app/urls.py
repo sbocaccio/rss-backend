@@ -12,7 +12,7 @@ from rest_framework import routers
 
 router = routers.SimpleRouter(trailing_slash=False)
 router.register(r'feed/', SubscriptionFeedAPI,basename= 'feed')
-
+router.register(r'folder',UserFolderAPIView,basename ='folder')
 subscription_feed_delete_and_refresh = SubscriptionFeedAPI.as_view({
     'delete': 'destroy',
     'put': 'refresh',
@@ -32,9 +32,10 @@ urlpatterns = format_suffix_patterns([
     path('login/', LoginAPIView.as_view(), name=''),
     path('subscriptions/<int:pk>/', subscription_feed_delete_and_refresh, name='delete_and_refresh'),
     path('subscriptions/<int:pk>/articles/', user_articles, name='articles'),
-    path('articles/<int:pk>/',user_article_update_read,name='update_read'),
-    path('folder/', user_folder, name='folder'),
+    path('articles/<int:pk>/', user_article_update_read , name='update_read'),
+  # path('folder/', user_folder, name='folder'),
 
 ])
 
 urlpatterns += router.urls
+a =4
