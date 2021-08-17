@@ -16,7 +16,7 @@ class CreateFeedSerializers(serializers.ModelSerializer):
     folders = serializers.SerializerMethodField('subscription_folders')
 
     def subscription_folders(self, subscription):
-        return UserFolder.objects.filter(subscriptions_feed__id=subscription.id).values_list('name',flat = True)
+        return UserFolder.objects.filter(subscriptions_feed__id=subscription.id, user= self.context['request'].user).values_list('name',flat = True)
     class Meta:
         model = SubscriptionFeeds
         fields = ['link', 'title', 'image', 'id','folders']
