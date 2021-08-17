@@ -6,6 +6,8 @@ from .views.articles import ArticleAPI
 from .views.login import LoginAPIView
 from .views.register import RegisterApi
 from .views.subscription_feed import SubscriptionFeedAPI
+from .views.user_folder import UserFolderAPIView
+
 from rest_framework import routers
 
 router = routers.SimpleRouter(trailing_slash=False)
@@ -26,7 +28,9 @@ urlpatterns = format_suffix_patterns([
     path('login/', LoginAPIView.as_view(), name=''),
     path('subscriptions/<int:pk>/', subscription_feed_delete_and_refresh, name='delete_and_refresh'),
     path('subscriptions/<int:pk>/articles/', user_articles, name='articles'),
-    path('articles/<int:pk>/',user_article_update_read,name='update_read')
+    path('articles/<int:pk>/',user_article_update_read,name='update_read'),
+    path('folder/', UserFolderAPIView.as_view(), name='folder'),
+
 ])
 
 urlpatterns += router.urls
