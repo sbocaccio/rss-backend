@@ -74,7 +74,8 @@ class SubscriptionFeedHelper():
             subscription.subscription_articles.add(*articles)
         subscription.save()
 
-        return self.create_user_articles_for_articles_and_user(articles, user)
+        user_article_helper = UserArticleHelper()
+        return user_article_helper.create_user_articles(articles, user)
 
     def _get_or_create_subscription_model(self, parsed_data):
         result = None
