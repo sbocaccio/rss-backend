@@ -10,7 +10,6 @@ class UserFolderSerializers(serializers.ModelSerializer):
         fields = ['name','id', 'subscriptions_feed']
 
 
-
     def create(self, request, *args, **kwargs):
         user_folder_helper = UserFolderHelper()
         user_folder = user_folder_helper.create_folder(request['name'], self.context['request'].user)
