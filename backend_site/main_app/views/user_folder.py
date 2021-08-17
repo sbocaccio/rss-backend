@@ -16,6 +16,9 @@ class UserFolderAPIView(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = UserFolderSerializers
 
+    def get_queryset(self):
+        return UserFolder.objects.filter(user=self.request.user)
+
     def update(self, request, *args, **kwargs):
         try:
             user_folder = UserFolder.objects.get(pk=kwargs['pk'], user=request.user)

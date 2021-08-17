@@ -14,6 +14,7 @@ class UserFolderTest(APITestCase):
         cls.rss_url = "https://urlfalsadelfeedparser.com"
         cls.test_helper = TestUtils()
         cls.folder_name = 'folder_name'
+        cls.another_folder_name = 'another_name'
 
 
     def test_user_can_create_a_folder(self):
@@ -106,3 +107,17 @@ class UserFolderTest(APITestCase):
         subscriptions = self.client.get("/main_app/feed/").json()
         self.assertEquals(len(subscriptions), 1)
         assert(self.folder_name in subscriptions[0]['folders'])
+
+
+    def test_user_can_get_her_folders(self):
+        self.test_helper.create_and_login_user('newuser', self.client)
+        folder1 = {'name': self.folder_name}
+        self.client.post('/main_app/folder', folder1)
+        folder2 = {'name': self.another_folder_name}
+        self.client.post('/main_app/folder', folder2)
+        folders = self.client.get('/main_app/folder').json()
+        self.assertEquals(len(folders), 2)
+        self.assertEquals(folders[0]['name'], self.folder_name)
+        self.assertEquals(folders[1]['name'], self.another_folder_name)
+
+
