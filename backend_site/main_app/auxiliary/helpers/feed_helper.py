@@ -53,7 +53,7 @@ class SubscriptionFeedHelper():
         added_users = []
         not_added_users = []
         for user in users:
-            if user in subscription.users_subscribed.all():
+            if subscription.users_subscribed.filter(username = user.username).exists():
                 not_added_users.append((user, UserAlreadySubscribedException()))
             else:
                 subscription.users_subscribed.add(user)
@@ -65,7 +65,7 @@ class SubscriptionFeedHelper():
 
 
     def add_user_to_subscription(self, subscription, user, subscription_parsed_data):
-        if user in subscription.users_subscribed.all():
+        if subscription.users_subscribed.filter(username = user.username).exists():
             raise UserAlreadySubscribedException()
 
         subscription.users_subscribed.add(user)
