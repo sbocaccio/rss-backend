@@ -25,7 +25,8 @@ class UserFolderAPIView(viewsets.ModelViewSet):
             subscription = SubscriptionFeeds.objects.get(id=request.data['subscription_id'])
             user_folder.subscriptions_feed.add(subscription)
             user_folder.save()
-            return Response()
+            serialized_folder = UserFolderSerializers(instance=user_folder).data
+            return Response({'folder': serialized_folder})
         except UserFolder.DoesNotExist:
             raise NotValidUserFolder()
         except SubscriptionFeeds.DoesNotExist:
