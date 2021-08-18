@@ -33,9 +33,7 @@ urlpatterns = format_suffix_patterns([
     path('subscriptions/<int:pk>/', subscription_feed_delete_and_refresh, name='delete_and_refresh'),
     path('subscriptions/<int:pk>/articles/', user_articles, name='articles'),
     path('articles/<int:pk>/', user_article_update_read , name='update_read'),
-  # path('folder/', user_folder, name='folder'),
 
 ])
 
 urlpatterns += router.urls
-a =4
